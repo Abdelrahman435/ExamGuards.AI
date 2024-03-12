@@ -4,7 +4,6 @@ const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
 const factory = require("./handlerFactory");
 
-
 exports.getAllCourses = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(Course.find(), req.query)
     .filter()

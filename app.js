@@ -55,10 +55,6 @@ app.use("/users", usersRouter);
 app.use("/courses", coursesRouter);
 app.use("/materials", materialsRouter);
 
-app.get("/", (req, res) => {
-  res.send(`welcome`);
-});
-
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
