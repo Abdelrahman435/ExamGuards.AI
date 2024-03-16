@@ -4,19 +4,27 @@ const authController = require("./../controllers/authController");
 
 const router = express.Router({ mergeParams: true }); //to get access to params in courses router
 
+router.use(authController.protect);
+
 router
   .route("/")
   .post(
-    authController.protect,
     authController.restrictTo("instructor"),
+    materialsController.setCourseUserIds,
     materialsController.createMaterial
   )
-  .get(authController.protect, materialsController.getAllMaterials);
+  .get(materialsController.getAllMaterials);
 
 router
-  .route("/:id", authController.protect)
+  .route("/:id")
   .get(materialsController.getMaterial)
-  .patch(materialsController.updateMaterial)
-  .delete(materialsController.deleteMaterial);
+  .patch(
+    authController.restrictTo("instructor"),
+    materialsController.updateMaterial
+  )
+  .delete(
+    authController.restrictTo("instructor"),
+    materialsController.deleteMaterial
+  );
 
 module.exports = router;

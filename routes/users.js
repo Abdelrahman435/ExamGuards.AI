@@ -4,26 +4,24 @@ const authController = require("../controllers/authController");
 const userController = require("../controllers/usersControllers");
 
 router.post("/signup", authController.signup);
-
 router.post("/login", authController.login);
-
 router.post("/forgotPassword", authController.forgotPassword);
-
 router.patch("/resetPassword/:token", authController.resetPassword);
 
-router.patch(
-  "/updatePassword",
-  authController.protect,
-  authController.updatePassword
-);
+router.use(authController.protect);
 
-router.patch("/updateMe", authController.protect, userController.updateMe);
+router.patch("/updatePassword", authController.updatePassword);
+router.get("/me", userController.getMe, userController.getUser);
+router.patch("/updateMe", userController.updateMe);
 
-router.patch(
-  "/deactivate",
-  authController.protect,
-  authController.restrictTo("admin"),
-  userController.deactivate
-);
+router.use(authController.restrictTo("admin"));
 
+router.patch("/deactivate/:id", userController.deactivate);
+
+router
+  .route("/:id")
+  .delete(userController.deleteUser)
+  .patch(userController.updateUser);
+
+router.get("/", userController.getAllUsers);
 module.exports = router;
