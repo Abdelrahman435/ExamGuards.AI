@@ -1,6 +1,7 @@
 const express = require("express");
 const materialsController = require("../controllers/materialsController");
 const authController = require("./../controllers/authController");
+const uploadToCloudinary = require("../middlewares/uploadToCloudinary");
 
 const router = express.Router({ mergeParams: true }); //to get access to params in courses router
 
@@ -10,10 +11,11 @@ router
   .route("/")
   .post(
     authController.restrictTo("instructor"),
+    materialsController.uploadCourseMaterials,
+    uploadToCloudinary, // Ensure this middleware is before creating the material
     materialsController.setCourseUserIds,
     materialsController.createMaterial
-  )
-  .get(materialsController.getAllMaterials);
+  ).get(materialsController.getAllMaterials);
 
 router
   .route("/:id")

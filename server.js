@@ -4,10 +4,10 @@
  * Module dependencies.
  */
 const mongoose = require("mongoose");
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 
-process.on('uncaughtException', err => {
-  console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
+process.on("uncaughtException", (err) => {
+  console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
   console.log(err.name, err.message);
   process.exit(1);
 });
@@ -54,8 +54,8 @@ server.on("listening", onListening);
  * Normalize a port into a number, string, or false.
  */
 
-process.on('unhandledRejection', err => {
-  console.log('UNHANDLED REJECTION! 💥 Shutting down...');
+process.on("unhandledRejection", (err) => {
+  console.log("UNHANDLED REJECTION! 💥 Shutting down...");
   console.log(err.name, err.message);
   server.close(() => {
     process.exit(1);

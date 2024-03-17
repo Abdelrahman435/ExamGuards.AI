@@ -1,14 +1,20 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const APIFeatures = require("./../utils/apiFeatures");
+const cloudinary = require("../utils/cloudinary");
 
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
-    const doc = await Model.findByIdAndDelete(req.params.id);
-    console.log(doc);
-    if (!doc) {
+    const model = await Model.findById(req.params.id);
+
+    if (!model) {
       return next(new AppError("No Document found with that ID", 404));
     }
+
+    const publicId = model.photo.split("/").pop().split(".")[0];
+    await cloudinary.uploader.destroy(publicId);
+
+    const doc = await Model.findByIdAndDelete(req.params.id);
 
     res.status(204).json({
       status: "success",
@@ -18,14 +24,19 @@ exports.deleteOne = (Model) =>
 
 exports.updateOne = (Model) =>
   catchAsync(async (req, res, next) => {
+    const model = await Model.findById(req.params.id);
+    if (!model) {
+      return next(new AppError("No Document found with that ID", 404));
+    }
+    console.log(model);
+    if (req.file) {
+      const publicId = model.photo.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(publicId);
+    }
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
-
-    if (!doc) {
-      return next(new AppError("No Document found with that ID", 404));
-    }
 
     res.status(200).json({
       status: "success",
@@ -37,7 +48,9 @@ exports.updateOne = (Model) =>
 
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
-    const newDocument = await Model.create(req.body);
+    if (req.file) req.body.file = req.cloudinaryResult.secure_url;
+
+    newDocument = await Model.create(req.body);
 
     res.status(201).json({
       status: "success",

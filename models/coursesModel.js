@@ -28,7 +28,7 @@ const courseSchema = new mongoose.Schema(
       type: Number,
       required: [true, "A Course must have a duration"],
     },
-    photo: {
+    file: {
       type: String,
       default: "default.jpg",
     },

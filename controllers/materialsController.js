@@ -1,7 +1,16 @@
 const Materials = require("../models/materialsModel");
 // const catchAsync = require("./../utils/catchAsync");
 // const AppError = require("./../utils/appError");
+const multer = require("multer");
 const factory = require("./handlerFactory");
+
+const multerStorage = multer.memoryStorage();
+
+const upload = multer({
+  storage: multerStorage,
+});
+
+exports.uploadCourseMaterials = upload.single("slides");
 
 exports.getMaterial = factory.getOne(Materials);
 

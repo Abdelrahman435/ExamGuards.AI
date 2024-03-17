@@ -8,7 +8,7 @@ const materialSchema = new mongoose.Schema(
       type: String,
       required: [true, "Lecture is required!"],
     },
-    slides: {
+    file: {
       type: String,
       default: "default.pdf",
     },
