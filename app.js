@@ -18,14 +18,14 @@ var materialsRouter = require("./routes/materials");
 
 var app = express();
 
-app.use(
-  cors({
-    origin: ["http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization", "Headers"],
-    credentials: true,
-  })
-);
+app.use(cors());
+// Access-Control-Allow-Origin *
+// api.natours.com, front-end natours.com
+// app.use(cors({
+//   origin: 'https://www.natours.com'
+// }))
+
+app.options("*", cors());
 
 app.use(helmet()); //set security HTTP headers
 
