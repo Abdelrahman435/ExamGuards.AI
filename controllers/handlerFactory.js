@@ -29,7 +29,11 @@ exports.updateOne = (Model) =>
       return next(new AppError("No Document found with that ID", 404));
     }
     console.log(model);
-    if (req.file) {
+    if (
+      req.file &&
+      model.photo !=
+        "https://res.cloudinary.com/hqjsjnf76/image/upload/v1710795969/q0gehpc2vmwautjvraye.png"
+    ) {
       const publicId = model.photo.split("/").pop().split(".")[0];
       await cloudinary.uploader.destroy(publicId);
     }

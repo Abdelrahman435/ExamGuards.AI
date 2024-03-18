@@ -125,16 +125,12 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   //3) Send it to users email
-  const resetURL = `${req.protocol}//${req.get("host")}/api/v1/users/reset/${resetToken}`;
-  const message = `Forgot your Password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}. \n If you didn't forgot your password, please ignore this email`;
 
   try {
-    // await sendEmail({
-    //   email: user.email,
-    //   subject: "Your passwword reset token (valid for 10 minutes)",
-    //   message,
-    // });
+    const resetURL = `
+    https://teachable-58941829a392.herokuapp.com/users/resetPassword/${resetToken}`;
 
+    await new Email(user, resetURL).sendPasswordReset();
     return res.status(200).json({
       status: "success",
       message: "Token sent to email",
