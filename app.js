@@ -18,6 +18,9 @@ var materialsRouter = require("./routes/materials");
 
 var app = express();
 
+app.use(cors()); // Enable CORS for all routes
+app.options("*", cors());
+
 app.use(helmet()); //set security HTTP headers
 
 //limit requests from same api
@@ -31,8 +34,7 @@ app.use("/login", limiter);
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
-app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(logger("dev"));
 app.use(express.json());
