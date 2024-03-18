@@ -22,7 +22,7 @@ app.use(
   cors({
     origin: ["http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Headers"],
+    allowedHeaders: ["Content-Type", "Authorization", "Headers"],
     credentials: true,
   })
 );
