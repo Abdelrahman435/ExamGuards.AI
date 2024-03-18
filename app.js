@@ -18,8 +18,14 @@ var materialsRouter = require("./routes/materials");
 
 var app = express();
 
-app.use(cors()); // Enable CORS for all routes
-app.options("*", cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
 app.use(helmet()); //set security HTTP headers
 
