@@ -24,7 +24,7 @@ router.patch(
 
 router.use(authController.restrictTo("admin"));
 
-router.patch("/deactivate/:id", userController.deactivate);
+router.patch("/activate/:id", userController.deactivate);
 
 router
   .route("/:id")
