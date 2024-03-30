@@ -5,6 +5,7 @@ const multer = require("multer");
 const sharp = require("sharp");
 const factory = require("./handlerFactory");
 const cloudinary = require("../utils/cloudinary");
+const Email = require("../utils/email");
 
 const multerStorage = multer.memoryStorage();
 
@@ -86,11 +87,14 @@ exports.getMe = (req, res, next) => {
 };
 
 exports.deactivate = catchAsync(async (req, res, next) => {
+  let url;
   const user = await User.findById(req.params.id);
   if (user.active === true) {
     await User.findByIdAndUpdate(req.params.id, { active: false });
+  } else {
+    await User.findByIdAndUpdate(req.params.id, { active: true });
+    await new Email(user, url).sendVerified();
   }
-  else await User.findByIdAndUpdate(req.params.id, { active: true });
 
   res.status(204).json({
     status: "success",
