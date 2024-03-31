@@ -6,7 +6,7 @@ const handleCastErrorDB = (err) => {
 };
 
 const handleDuplicateFieldsDB = (err) => {
-  const value = err.keyValue.email
+  const value = err.keyValue.email;
   console.log(value);
 
   const message = `Duplicate field value: ${value}. Please use another value!`;
@@ -17,6 +17,10 @@ const handleValidationErrorDB = (err) => {
 
   const message = `Invalid input data. ${errors.join(". ")}`;
   return new AppError(message, 400);
+};
+
+const handleConfirmPasswordError = (err) => {
+  return new AppError(err.errors.passwordConfirm.message, 400);
 };
 
 const handleJWTError = () =>
@@ -72,6 +76,9 @@ module.exports = (err, req, res, next) => {
       error = handleValidationErrorDB(error);
     if (error.name === "JsonWebTokenError") error = handleJWTError();
     if (error.name === "TokenExpiredError") error = handleTokenExpiredError();
+    if (error.errors.passwordConfirm.name === "ValidatorError")
+      error = handleConfirmPasswordError(error);
+
     sendErrorProd(error, res);
   }
 };
