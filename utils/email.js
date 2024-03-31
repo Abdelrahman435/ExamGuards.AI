@@ -1,19 +1,19 @@
 const nodemailer = require("nodemailer");
 const pug = require("pug");
 const htmlToText = require("html-to-text");
-const mailgunTransport = require("nodemailer-mailgun-transport");
+// const mailgunTransport = require("nodemailer-mailgun-transport");
 const dotenv = require("dotenv");
 dotenv.config({ path: "./config.env" });
 const path = require("path");
 
-const mailgunOptions = {
-  auth: {
-    api_key: process.env.MAILGUN_API_KEY,
-    domain: process.env.MAILGUN_DOMAIN,
-  },
-};
+// const mailgunOptions = {
+//   auth: {
+//     api_key: process.env.MAILGUN_API_KEY,
+//     domain: process.env.MAILGUN_DOMAIN,
+//   },
+// };
 
-const transport = mailgunTransport(mailgunOptions);
+// const transport = mailgunTransport(mailgunOptions);
 module.exports = class Email {
   constructor(user, url) {
     this.to = user.email;
@@ -24,9 +24,9 @@ module.exports = class Email {
   }
 
   newTransport() {
-    if (process.env.NODE_ENV === "production") {
-      return nodemailer.createTransport(transport);
-    }
+    // if (process.env.NODE_ENV === "production") {
+    //   return nodemailer.createTransport(transport);
+    // }
 
     return nodemailer.createTransport({
       host: "smtp.gmail.com",
