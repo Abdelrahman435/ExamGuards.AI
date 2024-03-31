@@ -32,7 +32,7 @@ exports.updateOne = (Model) =>
     if (
       req.file &&
       model.photo !=
-        "https://res.cloudinary.com/hqjsjnf76/image/upload/v1710795969/q0gehpc2vmwautjvraye.png"
+        `https://res.cloudinary.com/hqjsjnf76/image/upload/v1711915060/lpggj076c7r1a3y0d8wk.png`
     ) {
       const publicId = model.photo.split("/").pop().split(".")[0];
       await cloudinary.uploader.destroy(publicId);
