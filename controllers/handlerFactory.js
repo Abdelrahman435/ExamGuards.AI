@@ -29,13 +29,13 @@ exports.updateOne = (Model) =>
       return next(new AppError("No Document found with that ID", 404));
     }
     console.log(model);
-    if (
-      req.file &&
-      model.photo !=
-        `https://res.cloudinary.com/hqjsjnf76/image/upload/v1711915060/lpggj076c7r1a3y0d8wk.png`
-    ) {
+    if (req.file) {
       const publicId = model.photo.split("/").pop().split(".")[0];
-      await cloudinary.uploader.destroy(publicId);
+      if (
+        model.photo !=
+        "https://res.cloudinary.com/hqjsjnf76/image/upload/v1711915060/lpggj076c7r1a3y0d8wk.png"
+      )
+        await cloudinary.uploader.destroy(publicId);
     }
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
