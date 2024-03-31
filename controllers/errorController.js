@@ -23,6 +23,10 @@ const handleConfirmPasswordError = (err) => {
   return new AppError(err.errors.passwordConfirm.message, 400);
 };
 
+const handlePasswordlengthError = (err) => {
+  return new AppError(err.errors.password.message, 400);
+};
+
 const handleJWTError = () =>
   new AppError("Invalid token. Please log in again!", 401);
 
@@ -76,9 +80,13 @@ module.exports = (err, req, res, next) => {
       error = handleValidationErrorDB(error);
     if (error.name === "JsonWebTokenError") error = handleJWTError();
     if (error.name === "TokenExpiredError") error = handleTokenExpiredError();
-    if (error.errors.passwordConfirm.name === "ValidatorError")
-      error = handleConfirmPasswordError(error);
-
+    if (error.errors) {
+      if (
+        error.errors.passwordConfirm
+      )
+        error = handleConfirmPasswordError(error);
+      else error = handlePasswordlengthError(error);
+    }
     sendErrorProd(error, res);
   }
 };
