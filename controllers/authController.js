@@ -55,6 +55,13 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError("Incorrect email or password", 401));
   }
 
+  if (user.active == false) {
+    return res.status(401).json({
+      status: "fail",
+      message: "Your email not verified yet",
+    });
+  }
+
   createSendToken(user, 200, res);
 });
 

@@ -42,3 +42,5 @@ exports.createCourse = factory.createOne(Course);
 exports.updateCourse = factory.updateOne(Course);
 
 exports.deleteCourse = factory.deleteOne(Course);
+
+exports.changeStatus = factory.changeStatus(Course);

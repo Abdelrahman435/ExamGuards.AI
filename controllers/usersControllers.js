@@ -86,21 +86,7 @@ exports.getMe = (req, res, next) => {
   next();
 };
 
-exports.deactivate = catchAsync(async (req, res, next) => {
-  let url;
-  const user = await User.findById(req.params.id);
-  if (user.active === true) {
-    await User.findByIdAndUpdate(req.params.id, { active: false });
-  } else {
-    await User.findByIdAndUpdate(req.params.id, { active: true });
-    await new Email(user, url).sendVerified();
-  }
-
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
-});
+exports.changeStatus = factory.changeStatus(User);
 
 exports.deleteUser = factory.deleteOne(User);
 

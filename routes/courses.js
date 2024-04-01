@@ -37,4 +37,6 @@ router
     courseController.deleteCourse
   );
 
+router.patch("/status/:id", courseController.changeStatus);
+
 module.exports = router;

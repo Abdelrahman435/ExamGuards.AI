@@ -2,6 +2,7 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const APIFeatures = require("./../utils/apiFeatures");
 const cloudinary = require("../utils/cloudinary");
+const Email = require("../utils/email");
 
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
@@ -104,5 +105,21 @@ exports.getAll = (Model) =>
       data: {
         data: documents,
       },
+    });
+  });
+
+exports.changeStatus = (Model) =>
+  catchAsync(async (req, res, next) => {
+    let url;
+    const doc = await Model.findById(req.params.id);
+    if (doc.active === true) {
+      await Model.findByIdAndUpdate(req.params.id, { active: false });
+    } else {
+      await Model.findByIdAndUpdate(req.params.id, { active: true });
+    }
+    if (doc.firstName) await new Email(doc, url).sendVerified();
+
+    res.status(201).json({
+      status: "success",
     });
   });
