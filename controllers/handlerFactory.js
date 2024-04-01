@@ -28,7 +28,7 @@ exports.updateOne = (Model) =>
     if (!model) {
       return next(new AppError("No Document found with that ID", 404));
     }
-    console.log(model);
+    // console.log(model);
     if (req.file) {
       const publicId = model.photo.split("/").pop().split(".")[0];
       if (
