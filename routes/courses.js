@@ -13,7 +13,7 @@ router
   .get(authController.protect, courseController.getAllCourses)
   .post(
     authController.protect,
-    authController.restrictTo("admin"),
+    authController.restrictTo("admin", "super admin"),
     courseController.uploadCoursePhoto,
     courseController.resizeCoursePhoto,
     uploadToCloudinary,
@@ -25,7 +25,7 @@ router
   .get(authController.protect, courseController.getCourse)
   .patch(
     authController.protect,
-    authController.restrictTo("admin"),
+    authController.restrictTo("admin", "super admin"),
     courseController.uploadCoursePhoto,
     courseController.resizeCoursePhoto,
     uploadToCloudinary,
@@ -33,7 +33,7 @@ router
   )
   .delete(
     authController.protect,
-    authController.restrictTo("admin"),
+    authController.restrictTo("admin", "super admin"),
     courseController.deleteCourse
   );
 
