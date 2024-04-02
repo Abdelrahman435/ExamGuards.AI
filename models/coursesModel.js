@@ -45,7 +45,7 @@ const courseSchema = new mongoose.Schema(
     active: {
       type: Boolean,
       default: false,
-      select: false,
+      select: true,
     },
   },
   {

@@ -116,8 +116,8 @@ exports.changeStatus = (Model) =>
       await Model.findByIdAndUpdate(req.params.id, { active: false });
     } else {
       await Model.findByIdAndUpdate(req.params.id, { active: true });
+      if (doc.firstName) await new Email(doc, url).sendVerified();
     }
-    if (doc.firstName) await new Email(doc, url).sendVerified();
 
     res.status(201).json({
       status: "success",
