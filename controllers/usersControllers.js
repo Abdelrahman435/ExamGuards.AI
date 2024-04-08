@@ -56,8 +56,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   }
   const user = await User.findById(req.user.id);
   if (req.file) {
-    req.body.photo = req.cloudinaryResult.secure_url;
-    const publicId = user.photo.split("/").pop().split(".")[0];
+    req.body.file = req.cloudinaryResult.secure_url;
+    const publicId = user.file.split("/").pop().split(".")[0];
     await cloudinary.uploader.destroy(publicId);
   }
   const filterdBody = filterObj(
@@ -65,7 +65,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     "firstName",
     "lastName",
     "email",
-    "photo"
+    "file"
   );
 
   //2) update user document
