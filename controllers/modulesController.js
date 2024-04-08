@@ -1,4 +1,4 @@
-const Materials = require("../models/materialsModel");
+const Modules = require("../models/modulesModel");
 // const catchAsync = require("./../utils/catchAsync");
 // const AppError = require("./../utils/appError");
 const multer = require("multer");
@@ -11,9 +11,9 @@ const upload = multer({
   storage: multerStorage,
 });
 
-exports.uploadCourseMaterials = upload.single("slides");
+exports.uploadCourseModules = upload.single("file");
 
-exports.getMaterial = factory.getOne(Materials);
+exports.getModule = factory.getOne(Modules);
 
 exports.setCourseUserIds = (req, res, next) => {
   if (!req.body.course) req.body.course = req.params.courseId;
@@ -21,10 +21,10 @@ exports.setCourseUserIds = (req, res, next) => {
   next();
 };
 
-exports.createMaterial = factory.createOne(Materials);
+exports.createModule = factory.createOne(Modules);
 
-exports.updateMaterial = factory.updateOne(Materials);
+exports.updateModule = factory.updateOne(Modules);
 
-exports.getAllMaterials = factory.getAll(Materials);
+exports.getAllModules = factory.getAll(Modules);
 
-exports.deleteMaterial = factory.deleteOne(Materials);
+exports.deleteModule = factory.deleteOne(Modules);

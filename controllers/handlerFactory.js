@@ -12,7 +12,7 @@ exports.deleteOne = (Model) =>
       return next(new AppError("No Document found with that ID", 404));
     }
 
-    const publicId = model.photo.split("/").pop().split(".")[0];
+    const publicId = model.file.split("/").pop().split(".")[0];
     await cloudinary.uploader.destroy(publicId);
 
     const doc = await Model.findByIdAndDelete(req.params.id);
@@ -31,12 +31,13 @@ exports.updateOne = (Model) =>
     }
     // console.log(model);
     if (req.file) {
-      const publicId = model.photo.split("/").pop().split(".")[0];
+      const publicId = model.file.split("/").pop().split(".")[0];
       if (
-        model.photo !=
+        model.file !=
         "https://res.cloudinary.com/hqjsjnf76/image/upload/v1711915060/lpggj076c7r1a3y0d8wk.png"
       )
         await cloudinary.uploader.destroy(publicId);
+      req.body.file = req.cloudinaryResult.secure_url;
     }
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -50,7 +51,7 @@ exports.updateOne = (Model) =>
       },
     });
   });
-
+ 
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
     if (req.file) req.body.file = req.cloudinaryResult.secure_url;

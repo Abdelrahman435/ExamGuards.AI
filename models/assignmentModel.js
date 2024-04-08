@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 const User = require("./userModel");
 const Course = require("./coursesModel");
 
-const materialSchema = new mongoose.Schema(
+const assignmentSchema = new mongoose.Schema(
   {
-    lecture: {
+    name: {
       type: String,
       required: [true, "Lecture is required!"],
     },
@@ -19,7 +19,7 @@ const materialSchema = new mongoose.Schema(
     course: {
       type: mongoose.Schema.ObjectId,
       ref: "Course", // Should match the model name exactly
-      required: [true, "Material must belong to a course"],
+      required: [true, "Assignment must belong to a course"],
     },
     instructor: {
       type: mongoose.Schema.ObjectId,
@@ -34,7 +34,7 @@ const materialSchema = new mongoose.Schema(
   }
 );
 
-materialSchema.pre(/^find/, function (next) {
+assignmentSchema.pre(/^find/, function (next) {
   this.populate({
     path: "instructor",
     select: "firstName lastName",
@@ -43,6 +43,6 @@ materialSchema.pre(/^find/, function (next) {
   next();
 });
 
-const Materials = mongoose.model("Materials", materialSchema);
+const assignments = mongoose.model("Assignment", assignmentSchema);
 
-module.exports = Materials;
+module.exports = Assignment;

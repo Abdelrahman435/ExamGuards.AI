@@ -1,12 +1,12 @@
 const express = require("express");
 const courseController = require("../controllers/coursesController");
 const authController = require("./../controllers/authController");
-const materialsRouter = require("../routes/materials");
+const modulesRouter = require("../routes/modules");
 const uploadToCloudinary = require("../middlewares/uploadToCloudinary");
 
 const router = express.Router();
 
-router.use("/:courseId/materials", materialsRouter);
+router.use("/:courseId/modules", modulesRouter);
 
 router
   .route("/")

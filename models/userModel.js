@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       validate: [validator.isEmail, "Please provide a valid email"],
     },
-    photo: {
+    file: {
       type: String,
       default:
         "https://res.cloudinary.com/hqjsjnf76/image/upload/v1711915060/lpggj076c7r1a3y0d8wk.png",

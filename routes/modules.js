@@ -1,5 +1,5 @@
 const express = require("express");
-const materialsController = require("../controllers/materialsController");
+const modulesController = require("../controllers/modulesController");
 const authController = require("./../controllers/authController");
 const uploadToCloudinary = require("../middlewares/uploadToCloudinary");
 
@@ -11,22 +11,24 @@ router
   .route("/")
   .post(
     authController.restrictTo("instructor"),
-    materialsController.uploadCourseMaterials,
+    modulesController.uploadCourseModules,
     uploadToCloudinary, // Ensure this middleware is before creating the material
-    materialsController.setCourseUserIds,
-    materialsController.createMaterial
-  ).get(materialsController.getAllMaterials);
+    modulesController.setCourseUserIds,
+    modulesController.createModule
+  ).get(modulesController.getAllModules);
 
 router
   .route("/:id")
-  .get(materialsController.getMaterial)
+  .get(modulesController.getModule)
   .patch(
     authController.restrictTo("instructor"),
-    materialsController.updateMaterial
+    modulesController.uploadCourseModules,
+    uploadToCloudinary, // Ensure this middleware is before creating the material
+    modulesController.updateModule
   )
   .delete(
     authController.restrictTo("instructor"),
-    materialsController.deleteMaterial
+    modulesController.deleteModule
   );
 
 module.exports = router;
