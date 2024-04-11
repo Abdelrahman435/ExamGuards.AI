@@ -19,6 +19,8 @@ var modulesRouter = require("./routes/modules");
 
 var app = express();
 
+app.enable("trust proxy");
+
 app.use(
   cors({
     origin: ["http://localhost:3000"],
@@ -63,7 +65,7 @@ app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(compression())
+app.use(compression());
 
 app.use("/users", usersRouter);
 app.use("/courses", coursesRouter);

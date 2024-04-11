@@ -62,6 +62,13 @@ process.on("unhandledRejection", (err) => {
   });
 });
 
+process.on("SIGTERM", () => {
+  console.log("SIGTERM RECEIVED, Shutting down gracefully...");
+  server.close(() => {
+    console.log("Process terminated!");
+  });
+});
+
 function normalizePort(val) {
   var port = parseInt(val, 10);
 
