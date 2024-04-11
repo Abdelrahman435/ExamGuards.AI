@@ -6,7 +6,7 @@ const assignmentSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Lecture is required!"],
+      required: [true, "Name is required!"],
     },
     file: {
       type: String,
