@@ -56,8 +56,8 @@ const courseSchema = new mongoose.Schema(
 );
 
 // this is virtual populate
-courseSchema.virtual("materials", {
-  ref: "Materials",
+courseSchema.virtual("modules", {
+  ref: "Modules",
   foreignField: "course",
   localField: "_id",
 });
