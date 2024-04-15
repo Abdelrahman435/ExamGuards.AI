@@ -37,6 +37,31 @@ router
     courseController.deleteCourse
   );
 
-router.patch("/status/:id", courseController.changeStatus);
+router.patch(
+  "/status/:id",
+  authController.protect,
+  authController.restrictTo("admin", "super admin"),
+  courseController.changeStatus
+);
 
+router.post(
+  "/register/:courseId",
+  authController.protect,
+  authController.restrictTo("student"),
+  courseController.registerToCourse
+);
+
+router.patch(
+  "/addGrade/:id",
+  authController.protect,
+  authController.restrictTo("instructor"),
+  courseController.addGrades
+);
+
+router.post(
+  "/assign",
+  authController.protect,
+  authController.restrictTo("admin"),
+  courseController.assignInstructor
+);
 module.exports = router;

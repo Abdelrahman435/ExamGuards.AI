@@ -12,6 +12,7 @@ const handleDuplicateFieldsDB = (err) => {
   const message = `Duplicate field value: ${value}. Please use another value!`;
   return new AppError(message, 400);
 };
+
 const handleValidationErrorDB = (err) => {
   const errors = Object.values(err.errors).map((el) => el.message);
 
@@ -78,12 +79,16 @@ module.exports = (err, req, res, next) => {
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === "ValidationError")
       error = handleValidationErrorDB(error);
+    if (
+      error.message ===
+        'Assign validation failed: instructor: Cast to ObjectId failed for value "6609d8306045b5a5d7aab3f" (type string) at path "instructor" because of "BSONError"' ||
+      ""
+    )
+      error = handleValidationErrorDB(error);
     if (error.name === "JsonWebTokenError") error = handleJWTError();
     if (error.name === "TokenExpiredError") error = handleTokenExpiredError();
     if (error.errors) {
-      if (
-        error.errors.passwordConfirm
-      )
+      if (error.errors.passwordConfirm)
         error = handleConfirmPasswordError(error);
       else error = handlePasswordlengthError(error);
     }

@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const Course = require("./coursesModel");
 
 const userSchema = new mongoose.Schema(
   {
@@ -56,9 +57,8 @@ const userSchema = new mongoose.Schema(
     },
     courses: [
       {
-        type: String,
-        required: false,
-        trim: true,
+        type: mongoose.Schema.ObjectId, // identifiy to be a MongoDB ID
+        ref: "Course",
       },
     ],
     passwordChangedAt: Date,
@@ -69,6 +69,10 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
     passwordChangedAt: Date,
+  },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   },
   { timestamps: true }
 );
@@ -95,6 +99,19 @@ userSchema.pre("save", function (next) {
 //   this.find({ active: { $ne: false } });
 //   next();
 // });
+
+// this is virtual populate
+userSchema.virtual("register", {
+  ref: "Register",
+  foreignField: "student",
+  localField: "_id",
+});
+
+userSchema.virtual("assign", {
+  ref: "Assign",
+  foreignField: "instructor",
+  localField: "_id",
+});
 
 userSchema.methods.correctPassword = async function (
   candidatePassword,

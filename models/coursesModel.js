@@ -36,12 +36,12 @@ const courseSchema = new mongoose.Schema(
       type: Number,
       required: false,
     },
-    instructors: [
-      {
-        type: mongoose.Schema.ObjectId, // identifiy to be a MongoDB ID
-        ref: "User",
-      },
-    ],
+    // instructors: [
+    //   {
+    //     type: mongoose.Schema.ObjectId, // identifiy to be a MongoDB ID
+    //     ref: "User",
+    //   },
+    // ],
     active: {
       type: Boolean,
       default: false,
@@ -62,21 +62,35 @@ courseSchema.virtual("modules", {
   localField: "_id",
 });
 
-courseSchema.pre("save", async function (next) {
-  const instructorsPromises = this.instructors.map(
-    async (id) => await User.findById(id)
-  );
-  this.instructors = await Promise.all(instructorsPromises);
+// this is virtual populate
+courseSchema.virtual("register", {
+  ref: "Register",
+  foreignField: "course",
+  localField: "_id",
 });
 
-courseSchema.pre(/^find/, function (next) {
-  this.populate({
-    path: "instructors",
-    select: "-__v -updatedAt -createdAt -courses -role ",
-  }); // here to make the output contains the details of the instructor we should write populating
-
-  next();
+// this is virtual populate
+courseSchema.virtual("assign", {
+  ref: "Assign",
+  foreignField: "course",
+  localField: "_id",
 });
+
+// courseSchema.pre("save", async function (next) {
+//   const instructorsPromises = this.instructors.map(
+//     async (id) => await User.findById(id)
+//   );
+//   this.instructors = await Promise.all(instructorsPromises);
+// });
+
+// courseSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: "instructors",
+//     select: "-__v -updatedAt -createdAt -courses -role ",
+//   }); // here to make the output contains the details of the instructor we should write populating
+
+//   next();
+// });
 
 courseSchema.virtual("durationWeeks").get(function () {
   return this.duration / 7;

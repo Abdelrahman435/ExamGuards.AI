@@ -1,4 +1,6 @@
 const Course = require("../models/coursesModel");
+const Register = require("../models/registerModel");
+const Assign = require("../models/assugnInstructors");
 const catchAsync = require("./../utils/catchAsync");
 const multer = require("multer");
 const sharp = require("sharp");
@@ -44,3 +46,24 @@ exports.updateCourse = factory.updateOne(Course);
 exports.deleteCourse = factory.deleteOne(Course);
 
 exports.changeStatus = factory.changeStatus(Course);
+
+exports.registerToCourse = catchAsync(async (req, res, next) => {
+  await Register.create({ course: req.params.courseId, student: req.user.id });
+
+  res.status(201).json({
+    status: "The course has been registered",
+  });
+});
+
+exports.assignInstructor = catchAsync(async (req, res, next) => {
+  await Assign.create({
+    course: req.body.courseId,
+    instructor: req.body.instructorId,
+  });
+
+  res.status(201).json({
+    status: "The course has been Assigned to instructor",
+  });
+});
+
+exports.addGrades = factory.updateOne(Register);
