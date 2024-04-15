@@ -79,12 +79,6 @@ module.exports = (err, req, res, next) => {
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === "ValidationError")
       error = handleValidationErrorDB(error);
-    if (
-      error.message ===
-        'Assign validation failed: instructor: Cast to ObjectId failed for value "6609d8306045b5a5d7aab3f" (type string) at path "instructor" because of "BSONError"' ||
-      ""
-    )
-      error = handleValidationErrorDB(error);
     if (error.name === "JsonWebTokenError") error = handleJWTError();
     if (error.name === "TokenExpiredError") error = handleTokenExpiredError();
     if (error.errors) {
