@@ -56,14 +56,27 @@ exports.registerToCourse = catchAsync(async (req, res, next) => {
 });
 
 exports.assignInstructor = catchAsync(async (req, res, next) => {
+  // Create a new assignment
   await Assign.create({
     course: req.body.courseId,
     instructor: req.body.instructorId,
   });
 
+  // Update the Course document to add the new instructor
+  const updatedCourse = await Course.findByIdAndUpdate(
+    req.body.courseId,
+    { $push: { instructors: req.body.instructorId } }, //$push to add to the array
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
   res.status(201).json({
-    status: "The course has been Assigned to instructor",
+    status: "success",
+    msg:"The course has been assigned to the instructor"
   });
 });
+
 
 exports.addGrades = factory.updateOne(Register);

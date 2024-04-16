@@ -36,12 +36,12 @@ const courseSchema = new mongoose.Schema(
       type: Number,
       required: false,
     },
-    // instructors: [
-    //   {
-    //     type: mongoose.Schema.ObjectId, // identifiy to be a MongoDB ID
-    //     ref: "User",
-    //   },
-    // ],
+    instructors: [
+      {
+        type: mongoose.Schema.ObjectId, // identifiy to be a MongoDB ID
+        ref: "User",
+      },
+    ],
     active: {
       type: Boolean,
       default: false,
@@ -58,6 +58,12 @@ const courseSchema = new mongoose.Schema(
 // this is virtual populate
 courseSchema.virtual("modules", {
   ref: "Modules",
+  foreignField: "course",
+  localField: "_id",
+});
+
+courseSchema.virtual("assignment", {
+  ref: "Assignment",
   foreignField: "course",
   localField: "_id",
 });
