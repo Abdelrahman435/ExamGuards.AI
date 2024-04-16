@@ -11,10 +11,10 @@ exports.deleteOne = (Model) =>
     if (!model) {
       return next(new AppError("No Document found with that ID", 404));
     }
-
-    const publicId = model.file.split("/").pop().split(".")[0];
-    await cloudinary.uploader.destroy(publicId);
-
+    if (model.file) {
+      const publicId = model.file.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(publicId);
+    }
     const doc = await Model.findByIdAndDelete(req.params.id);
 
     res.status(204).json({
@@ -51,7 +51,7 @@ exports.updateOne = (Model) =>
       },
     });
   });
- 
+
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
     if (req.file) req.body.file = req.cloudinaryResult.secure_url;

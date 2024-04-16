@@ -3,10 +3,12 @@ const courseController = require("../controllers/coursesController");
 const authController = require("./../controllers/authController");
 const modulesRouter = require("../routes/modules");
 const uploadToCloudinary = require("../middlewares/uploadToCloudinary");
+const examRouter = require("../routes/exams")
 
 const router = express.Router();
 
 router.use("/:courseId/modules", modulesRouter);
+router.use("/:courseId/exams", examRouter);
 
 router
   .route("/")
