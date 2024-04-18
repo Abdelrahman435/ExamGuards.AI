@@ -10,7 +10,7 @@ router
   .route("/")
   .post(
     authController.restrictTo("instructor"),
-    examController.setExamTimes,
+    examController.setuserId,
     examController.createExam
   )
   .get(examController.getAllExam);
@@ -20,5 +20,7 @@ router
   .patch(authController.restrictTo("instructor"), examController.updateExam)
   .get(authController.protect, examController.getExam)
   .delete(authController.restrictTo("instructor"), examController.deleteExam);
+
+router.post("/autoGrade/:id", examController.autoGrade);
 
 module.exports = router;

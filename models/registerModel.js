@@ -13,10 +13,18 @@ const registerSchema = new mongoose.Schema(
       ref: "User", // Should match the model name exactly
       required: true,
     },
-    grade: {
-      type: Number,
-      default: 50,
-    },
+    grades: [
+      {
+        nameOfExam: {
+          type: String,
+          required: true,
+        },
+        grade: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
@@ -26,7 +34,6 @@ const registerSchema = new mongoose.Schema(
 );
 
 registerSchema.index({ course: 1, student: 1 }, { unique: true });
-
 
 const Register = mongoose.model("Register", registerSchema);
 

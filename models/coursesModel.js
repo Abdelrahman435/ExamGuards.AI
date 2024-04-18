@@ -42,6 +42,12 @@ const courseSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    students: [
+      {
+        type: mongoose.Schema.ObjectId, // identifiy to be a MongoDB ID
+        ref: "User",
+      },
+    ],
     active: {
       type: Boolean,
       default: false,
@@ -72,6 +78,12 @@ courseSchema.virtual("assignment", {
 courseSchema.virtual("register", {
   ref: "Register",
   foreignField: "course",
+  localField: "_id",
+});
+
+courseSchema.virtual("registerStudents", {
+  ref: "User",
+  foreignField: "courses",
   localField: "_id",
 });
 

@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: {
-        values: ["student", "admin", "instructor","super admin"],
+        values: ["student", "admin", "instructor", "super admin"],
         message: "role is either: admin, student, instructor",
       },
       default: "student",
@@ -59,6 +59,18 @@ const userSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.ObjectId, // identifiy to be a MongoDB ID
         ref: "Course",
+        // grades: [
+        //   {
+        //     body: {
+        //       type: String,
+        //       required: true,
+        //     },
+        //     grade: {
+        //       type: Number,
+        //       required: true,
+        //     },
+        //   },
+        // ],
       },
     ],
     passwordChangedAt: Date,
@@ -110,6 +122,16 @@ userSchema.virtual("register", {
 userSchema.virtual("assign", {
   ref: "Assign",
   foreignField: "instructor",
+  localField: "_id",
+});
+userSchema.virtual("assignCourses", {
+  ref: "Course",
+  foreignField: "instructors",
+  localField: "_id",
+});
+userSchema.virtual("registerCourses", {
+  ref: "Course",
+  foreignField: "students",
   localField: "_id",
 });
 

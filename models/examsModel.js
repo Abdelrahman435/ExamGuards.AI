@@ -83,10 +83,6 @@ const examSchema = new mongoose.Schema(
               type: Number,
               required: true,
             },
-            AutoGraded: {
-              type: Boolean,
-              required: true,
-            },
             Answers: [
               {
                 body: {
