@@ -17,6 +17,7 @@ var usersRouter = require("./routes/users");
 var coursesRouter = require("./routes/courses");
 var modulesRouter = require("./routes/modules");
 var examsRouter = require("./routes/exams");
+var gradesRouter = require("./routes/grades");
 
 var app = express();
 
@@ -72,6 +73,7 @@ app.use("/users", usersRouter);
 app.use("/courses", coursesRouter);
 app.use("/modules", modulesRouter);
 app.use("/exams", examsRouter);
+app.use("/grades", gradesRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

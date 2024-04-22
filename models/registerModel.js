@@ -35,6 +35,24 @@ const registerSchema = new mongoose.Schema(
 
 registerSchema.index({ course: 1, student: 1 }, { unique: true });
 
+registerSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "student",
+    select: " firstName lastName ",
+  }); // here to make the output contains the details of the instructor we should write populating
+
+  next();
+});
+
+registerSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "course",
+    select: "-__v  -duration -active -students -durationWeeks ",
+  }); // here to make the output contains the details of the instructor we should write populating
+
+  next();
+});
+
 const Register = mongoose.model("Register", registerSchema);
 
 module.exports = Register;

@@ -38,7 +38,7 @@ exports.resizeCoursePhoto = catchAsync(async (req, res, next) => {
 
 exports.getAllCourses = factory.getAll(Course);
 
-exports.getCourse = factory.getOne(Course, { path: "materials" });
+exports.getCourse = factory.getOne(Course, { path: "modules" });
 
 exports.createCourse = factory.createOne(Course);
 
