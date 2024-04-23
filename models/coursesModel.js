@@ -111,7 +111,7 @@ courseSchema.virtual("assign", {
 // });
 
 courseSchema.virtual("durationWeeks").get(function () {
-  return this.duration / 7;
+  return Math.floor(this.duration / 7); // Use Math.floor to round down to the nearest integer
 });
 
 const Course = mongoose.model("Course", courseSchema);
