@@ -85,8 +85,8 @@ const userSchema = new mongoose.Schema(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  },
-  { timestamps: true }
+    timestamps: true, // Moved timestamps into the same object
+  }
 );
 
 userSchema.pre("save", async function (next) {
