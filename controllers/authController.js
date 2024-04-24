@@ -42,7 +42,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 
 exports.login = catchAsync(async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, rememberMe } = req.body;
 
   if (!email || !password) {
     return next(new AppError("Please provide email and password", 400));
@@ -60,6 +60,7 @@ exports.login = catchAsync(async (req, res, next) => {
       message: "Your email not verified yet",
     });
   }
+  user.rememberMe = rememberMe;
 
   createSendToken(user, 200, req, res);
 });
