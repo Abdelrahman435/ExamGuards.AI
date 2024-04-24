@@ -128,7 +128,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   try {
     const resetURL = `
-    https://teachable-58941829a392.herokuapp.com/users/resetPassword/${resetToken}`;
+    http://localhost:3000/forgetPassword/${resetToken}`;
 
     await new Email(user, resetURL).sendPasswordReset();
     return res.status(200).json({
