@@ -48,6 +48,7 @@ exports.deleteCourse = factory.deleteOne(Course);
 
 exports.changeStatus = factory.changeStatus(Course);
 
+
 exports.registerToCourse = catchAsync(async (req, res, next) => {
   await Register.create({ course: req.params.courseId, student: req.user.id });
   await Course.findByIdAndUpdate(
