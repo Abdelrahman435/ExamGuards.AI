@@ -25,3 +25,9 @@
     .jumbotron .lang-logo img {
       max-width: 100%; }
 
+
+      .test-class{
+        border-color: #ed6b17;
+        color: white;
+        background-color: #ed6b17;
+      }
