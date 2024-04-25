@@ -27,8 +27,7 @@ const userSchema = new mongoose.Schema(
     },
     file: {
       type: String,
-      default:
-        "https://res.cloudinary.com/hqjsjnf76/image/upload/v1711915060/default",
+      default: "https://teachable-58941829a392.herokuapp.com/user_1.png",
     },
     role: {
       type: String,
