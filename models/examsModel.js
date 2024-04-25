@@ -75,6 +75,7 @@ const examSchema = new mongoose.Schema(
           },
           {
             QuestionType: "ChooseQuestion",
+            numberOfQuestion: Number,
             QuestionTitle: {
               type: String,
               required: true,
