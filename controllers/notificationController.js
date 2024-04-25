@@ -1,24 +1,18 @@
-// Public Key:
-// BCPli_w-CwPlB6hqWdKk7vmgnGlJVpEhgxFoXENf0Tr9hvpVJgqjNi1UW_Y-fDuAWDGoMyFTSKO8-yLwo8I381o
+const Notification = require('../models/notifcationsModel'); // Adjust the path as needed
+const io = require('../path/to/socketInstance'); // Adjust the path as needed
 
-// Private Key:
-// VTvF-byc35JUuvKxwE4bjs-bWPlYX684YRla9d5LslM
-const catchAsync = require("./../utils/catchAsync");
-const NotificationSubscription = require("../../models/notificationSubscription");
-const Notification = require("../../models/notification");
-const webpushpush = require("web-push");
-const mongoose = require("mongoose");
-const factory = require("../controllers/handlerFactory");
+exports.createNotification = async (req, res) => {
+    try {
+        const { to, type, priority, read, data } = req.body;
+        const newNotification = new Notification({ to, type, priority, read, data });
+        await newNotification.save();
+        
+        // Emit the new notification to all connected clients
+        io.emit('newNotification', newNotification);
 
-let publicVapidKey = "";
-let privateVapidKey = "";
-
-webpush.setVapidDetails("", publicVapidKey, privateVapidKey);
-
-push.sendNotification(sub, "test message");
-
-exports.setUserId = catchAsync(async(req, res, next)=>{
-    req.body
-})
-
-const createNotification = factory.createOne(Notification);
+        res.status(201).json({ message: 'Notification created successfully', notification: newNotification });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};

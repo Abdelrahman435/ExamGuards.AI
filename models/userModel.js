@@ -38,6 +38,9 @@ const userSchema = new mongoose.Schema(
       },
       default: "student",
     },
+    phone: {
+      type: Number,
+    },
     password: {
       type: String,
       required: [true, "Please provide a password"],

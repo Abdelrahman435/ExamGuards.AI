@@ -15,6 +15,7 @@ process.on("uncaughtException", (err) => {
 var app = require("./app");
 var debug = require("debug")("server:server");
 var http = require("http");
+const socketIo = require('socket.io');
 
 /**
  * Get port from environment and store in Express.
@@ -42,6 +43,15 @@ app.set("port", port);
 
 var server = http.createServer(app);
 
+const io = socketIo(server);
+
+io.on('connection', (socket) => {
+    console.log('New client connected');
+
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    });
+});
 /**
  * Listen on provided port, on all network interfaces.
  */
