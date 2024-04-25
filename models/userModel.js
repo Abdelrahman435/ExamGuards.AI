@@ -39,8 +39,15 @@ const userSchema = new mongoose.Schema(
       default: "student",
     },
     phone: {
-      type: Number,
+      type: String,
+      validate: {
+        validator: function (value) {
+          return value.length === 11 && validator.isNumeric(value);
+        },
+        message: "Phone number must be exactly 11 digits",
+      },
     },
+
     password: {
       type: String,
       required: [true, "Please provide a password"],
