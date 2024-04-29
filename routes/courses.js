@@ -63,7 +63,7 @@ router.patch(
 router.post(
   "/assign",
   authController.protect,
-  authController.restrictTo("admin"),
+  authController.restrictTo("admin","super admin"),
   courseController.assignInstructor
 );
 module.exports = router;
