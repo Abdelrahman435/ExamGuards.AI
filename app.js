@@ -18,6 +18,7 @@ var coursesRouter = require("./routes/courses");
 var modulesRouter = require("./routes/modules");
 var examsRouter = require("./routes/exams");
 var gradesRouter = require("./routes/grades");
+const poseDetectRouter = require("./routes/poseDetect");
 
 var app = express();
 
@@ -25,7 +26,7 @@ app.enable("trust proxy");
 
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3000", "http://127.0.0.1:5500"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -74,6 +75,7 @@ app.use("/courses", coursesRouter);
 app.use("/modules", modulesRouter);
 app.use("/exams", examsRouter);
 app.use("/grades", gradesRouter);
+app.use("/poseDetect", poseDetectRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
