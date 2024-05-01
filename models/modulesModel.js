@@ -10,11 +10,11 @@ const modulesSchema = new mongoose.Schema(
     },
     file: {
       type: String,
-      default: "default.pdf",
+      default: "",
     },
     video: {
       type: String,
-      default: "url",
+      default: "",
     },
     course: {
       type: mongoose.Schema.ObjectId,

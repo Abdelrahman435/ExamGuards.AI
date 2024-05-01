@@ -91,17 +91,24 @@ exports.getAll = (Model) =>
     //To allow for nested GET Materials on course
     let filter = {};
     if (req.params.courseId) filter = { course: req.params.courseId };
-
+    const docs = await Model.find();
     const features = new APIFeatures(Model.find(filter), req.query)
       .filter()
       .sort()
       .limitFields()
       .paginate();
     const documents = await features.query;
+    let totalPages;
+    if (req.query.limit) {
+      totalPages = Math.ceil(docs.length / req.query.limit);
+    } else {
+      totalPages = 0;
+    }
 
     // SEND RESPONSE
     res.status(200).json({
       status: "success",
+      totalPages,
       results: documents.length,
       data: {
         data: documents,
