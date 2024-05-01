@@ -26,17 +26,14 @@ exports.deleteOne = (Model) =>
 exports.updateOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const model = await Model.findById(req.params.id);
+    let publicId;
     if (!model) {
       return next(new AppError("No Document found with that ID", 404));
     }
     // console.log(model);
-    if (req.file) {
-      const publicId = model.file.split("/").pop().split(".")[0];
-      if (
-        model.file !=
-        "https://res.cloudinary.com/hqjsjnf76/image/upload/v1711915060/lpggj076c7r1a3y0d8wk.png"
-      )
-        await cloudinary.uploader.destroy(publicId);
+    if (req.file && model.file) {
+      publicId = model.file.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(publicId);
       req.body.file = req.cloudinaryResult.secure_url;
     }
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
