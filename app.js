@@ -18,7 +18,7 @@ var coursesRouter = require("./routes/courses");
 var modulesRouter = require("./routes/modules");
 var examsRouter = require("./routes/exams");
 var gradesRouter = require("./routes/grades");
-const poseDetectRouter = require("./routes/poseDetect");
+// const poseDetectRouter = require("./routes/poseDetect");
 
 var app = express();
 
@@ -75,7 +75,7 @@ app.use("/courses", coursesRouter);
 app.use("/modules", modulesRouter);
 app.use("/exams", examsRouter);
 app.use("/grades", gradesRouter);
-app.use("/poseDetect", poseDetectRouter);
+// app.use("/poseDetect", poseDetectRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
