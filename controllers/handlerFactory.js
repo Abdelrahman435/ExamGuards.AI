@@ -32,12 +32,15 @@ exports.updateOne = (Model) =>
     }
     // console.log(req.file);
     // console.log(model);
-    if (req.file && model.file) {
-      publicId = model.file.split("/").pop().split(".")[0];
-      await cloudinary.uploader.destroy(publicId);
+    if (req.file) {
       req.body.file = req.cloudinaryResult.secure_url;
+
+      if (model.file) {
+        publicId = model.file.split("/").pop().split(".")[0];
+        await cloudinary.uploader.destroy(publicId);
+        req.body.file = req.cloudinaryResult.secure_url;
+      }
     }
-    req.body.file = req.cloudinaryResult.secure_url;
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
