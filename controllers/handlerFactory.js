@@ -110,6 +110,7 @@ exports.getAll = (Model) =>
     // SEND RESPONSE
     res.status(200).json({
       status: "success",
+      totalDocs: docs.length,
       totalPages,
       results: documents.length,
       data: {
