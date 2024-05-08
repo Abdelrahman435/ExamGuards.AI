@@ -61,14 +61,14 @@ exports.detectCheating = async (req, res) => {
   } catch (error) {
     console.error("Error processing images:", error);
     res.status(500).json({ error: "Internal server error" });
-  } finally {
-    // Delete uploaded image files
-    imageFiles.forEach((filePath) => {
-      fs.unlink(filePath, (err) => {
-        if (err) {
-          console.error("Error deleting file:", err);
-        }
-      });
-    });
-  }
+  } //finally {
+  //     // Delete uploaded image files
+  //     imageFiles.forEach((filePath) => {
+  //       fs.unlink(filePath, (err) => {
+  //         if (err) {
+  //           console.error("Error deleting file:", err);
+  //         }
+  //       });
+  //     });
+  //   }
 };
