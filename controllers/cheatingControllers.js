@@ -10,7 +10,7 @@ exports.detectCheating = async (req, res) => {
   // Convert each image to FormData
   const formDataArray = imageFiles.map((filePath) => {
     const formData = new FormData();
-    formData.append("image_files", fs.createReadStream(filePath));
+    formData.append("imagefiles", fs.createReadStream(filePath));
     return formData;
   });
 
