@@ -7,7 +7,7 @@ const examSchema = new mongoose.Schema(
     },
     course: {
       type: mongoose.Schema.ObjectId,
-      ref: "Course", // Should match the model name exactly
+      ref: "Course",
       required: [true, "Exam must belong to a course"],
     },
     createdBy: {
@@ -16,12 +16,12 @@ const examSchema = new mongoose.Schema(
       ref: "User",
     },
     startedAt: {
-      type: Date,
+      type: String, // Changed type to String
       required: true,
       trim: true,
     },
     expiredAt: {
-      type: Date,
+      type: String, // Changed type to String
       required: true,
       trim: true,
     },
@@ -104,9 +104,28 @@ const examSchema = new mongoose.Schema(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-    timestamps: true, // Moved timestamps into the same object
+    timestamps: true,
   }
 );
+
+examSchema.methods.updateStatus = function () {
+  const now = new Date();
+
+  const startedAtDate = new Date(this.startedAt);
+  const expiredAtDate = new Date(this.expiredAt);
+
+  if (isNaN(startedAtDate.getTime()) || isNaN(expiredAtDate.getTime())) {
+    throw new Error("Invalid date format for startedAt or expiredAt");
+  }
+
+  if (now >= startedAtDate && now < expiredAtDate) {
+    this.status = "open";
+  } else if (now >= expiredAtDate) {
+    this.status = "ended";
+  } else {
+    this.status = "coming-soon";
+  }
+};
 
 const Exam = mongoose.model("Exam", examSchema);
 

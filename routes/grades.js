@@ -17,4 +17,10 @@ router.get(
   gradesController.getGradesforCourse
 );
 
+router.get(
+  "/oneExam/:courseId",
+  authController.restrictTo("instructor"),
+  gradesController.getGradesforExam
+);
+
 module.exports = router;

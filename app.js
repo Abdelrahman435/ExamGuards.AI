@@ -18,6 +18,8 @@ var coursesRouter = require("./routes/courses");
 var modulesRouter = require("./routes/modules");
 var examsRouter = require("./routes/exams");
 var gradesRouter = require("./routes/grades");
+var cheatingRouter = require("./routes/cheating");
+
 // const poseDetectRouter = require("./routes/poseDetect");
 
 var app = express();
@@ -69,12 +71,14 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(compression());
+app.use(express.static("upload"));
 
 app.use("/users", usersRouter);
 app.use("/courses", coursesRouter);
 app.use("/modules", modulesRouter);
 app.use("/exams", examsRouter);
 app.use("/grades", gradesRouter);
+app.use("/detect", cheatingRouter);
 // app.use("/poseDetect", poseDetectRouter);
 
 app.all("*", (req, res, next) => {

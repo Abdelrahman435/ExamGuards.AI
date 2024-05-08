@@ -3,6 +3,7 @@ const AppError = require("../utils/appError");
 const APIFeatures = require("./../utils/apiFeatures");
 const cloudinary = require("../utils/cloudinary");
 const Email = require("../utils/email");
+const Exam = require("../models/examsModel");
 
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
@@ -92,21 +93,28 @@ exports.getAll = (Model) =>
   catchAsync(async (req, res, next) => {
     //To allow for nested GET Materials on course
     let filter = {};
+    let docs;
     if (req.params.courseId) filter = { course: req.params.courseId };
-    const docs = await Model.find();
     const features = new APIFeatures(Model.find(filter), req.query)
       .filter()
       .sort()
       .limitFields()
       .paginate();
-    const documents = await features.query;
+    let documents = await features.query;
     let totalPages;
     if (req.query.limit) {
+      docs = await Model.find();
       totalPages = Math.ceil(docs.length / req.query.limit);
     } else {
       totalPages = 0;
+      docs = 0
     }
-
+    if (Model == Exam) {
+      documents = documents.map((exam) => {
+        exam.updateStatus();
+        return exam;
+      });
+    }
     // SEND RESPONSE
     res.status(200).json({
       status: "success",

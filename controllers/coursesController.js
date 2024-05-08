@@ -96,3 +96,7 @@ exports.assignInstructor = catchAsync(async (req, res, next) => {
 });
 
 exports.addGrades = factory.updateOne(Register);
+
+exports.getStudentsPerCourse = catchAsync(async (req, res, next) => {
+  
+})
