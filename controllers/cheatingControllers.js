@@ -56,7 +56,7 @@ exports.detectCheating = async (req, res) => {
       res.status(200).json({ message: "Cheating detected" });
     } else {
       // Send response indicating no cheating detected
-      res.status(200).json({ message: "No cheating detected" }, imageFiles);
+      res.status(400).send(imageFiles);
     }
   } catch (error) {
     console.error("Error processing images:", error);
