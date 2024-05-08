@@ -56,13 +56,13 @@ exports.detectCheating = async (req, res) => {
       res.status(200).json({ message: "Cheating detected" });
     } else {
       // Send response indicating no cheating detected
-      res.status(200).json({ message: "No cheating detected" });
+      res.status(200).json({ message: "No cheating detected" }, imageFiles);
     }
   } catch (error) {
     console.error("Error processing images:", error);
     res.status(500).json({ error: "Internal server error" });
   } //finally {
-  //     // Delete uploaded image files
+  // Delete uploaded image files
   //     imageFiles.forEach((filePath) => {
   //       fs.unlink(filePath, (err) => {
   //         if (err) {
