@@ -11,10 +11,10 @@ const cheatingSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    cheatingDetalis: {
+    cheatingDetalis: [{
       type: String,
       required: true,
-    },
+    }],
   },
   {
     toJSON: { virtuals: true },
