@@ -59,10 +59,6 @@ const examSchema = new mongoose.Schema(
               type: Number,
               required: true,
             },
-            AutoGraded: {
-              type: Boolean,
-              required: true,
-            },
             TextMatch: {
               type: Boolean,
               required: true,
