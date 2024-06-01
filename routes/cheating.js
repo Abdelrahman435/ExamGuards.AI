@@ -17,4 +17,10 @@ router.post(
   cheatingController.objectDetection
 );
 
+router.post(
+  "/faceRecognition",
+  upload.array("image_files"),
+  cheatingController.faceRecognition
+);
+
 module.exports = router;
