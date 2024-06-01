@@ -75,47 +75,37 @@ exports.eyeTracking = async (req, res) => {
 exports.objectDetection = async (req, res) => {
   const imageFiles = req.files.map((file) => file.path);
 
-  // Convert each image to FormData
-  const formDataArray = imageFiles.map((filePath) => {
-    const formData = new FormData();
+  // Create a single FormData object containing all image files
+  const formData = new FormData();
+  imageFiles.forEach((filePath) => {
     formData.append("imagefiles", fs.createReadStream(filePath));
-    return formData;
-  });
-
-  // Array to store promises for each image upload to Flask
-  const uploadPromises = formDataArray.map((formData) => {
-    return axios.post("http://127.0.0.1:5000/detect", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
   });
 
   try {
-    // Wait for all requests to complete
-    const responses = await Promise.all(uploadPromises);
+    // Make a single request to the Flask endpoint
+    const response = await axios.post("http://127.0.0.1:5000/detect", formData, {
+      headers: {
+        ...formData.getHeaders(),
+      },
+    });
 
     // Check if any data was returned from the endpoint
-    const cheatingDetected = responses.some(
-      (response) => response.data.length > 0
-    );
+    const cheatingDetected = response.data.length > 0;
 
     if (cheatingDetected) {
       // Save response data for each image in Cheating model
       const savedData = [];
-      responses.forEach((response) => {
-        response.data.forEach(async (imageData) => {
-          const cheatingData = {
-            student: req.user.id, // User ID
-            cheatingDetalis: imageData.objects,
-            image: imageData.URL,
-          };
+      for (const imageData of response.data) {
+        const cheatingData = {
+          student: req.user.id, // User ID
+          cheatingDetalis: imageData.objects,
+          image: imageData.URL,
+        };
 
-          // Save cheating data to database
-          const savedCheating = await Cheating.create(cheatingData);
-          savedData.push(savedCheating);
-        });
-      });
+        // Save cheating data to database
+        const savedCheating = await Cheating.create(cheatingData);
+        savedData.push(savedCheating);
+      }
       // Send response indicating cheating detected
       res.status(200).json({ message: "Cheating detected" });
     } else {
@@ -130,7 +120,7 @@ exports.objectDetection = async (req, res) => {
     imageFiles.forEach((filePath) => {
       fs.unlink(filePath, (err) => {
         if (err) {
-          console.error("Error deleting file:");
+          console.error("Error deleting file:", err);
         }
       });
     });
