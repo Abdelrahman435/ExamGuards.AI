@@ -1,16 +1,16 @@
-const mongoose = require("mongoose");
-const User = require("./userModel");
-const Course = require("./coursesModel");
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const registerSchema = new mongoose.Schema(
+const registerSchema = new Schema(
   {
     course: {
       type: mongoose.Schema.ObjectId,
-      ref: "Course", // Should match the model name exactly
+      ref: 'Course', // Should match the model name exactly
+      required: true,
     },
     student: {
       type: mongoose.Schema.ObjectId,
-      ref: "User", // Should match the model name exactly
+      ref: 'User', // Should match the model name exactly
       required: true,
     },
     grades: [
@@ -37,7 +37,7 @@ const registerSchema = new mongoose.Schema(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-    timestamps: true, // Moved timestamps into the same object
+    timestamps: true,
   }
 );
 
@@ -45,22 +45,17 @@ registerSchema.index({ course: 1, student: 1 }, { unique: true });
 
 registerSchema.pre(/^find/, function (next) {
   this.populate({
-    path: "student",
-    select: " firstName lastName email _id file",
-  }); // here to make the output contains the details of the instructor we should write populating
+    path: 'student',
+    select: 'firstName lastName email _id file',
+  }).populate({
+    path: 'course',
+    select: 'name description file status  -active ', // Specify fields to include and exclude
+  });
 
   next();
 });
 
-// registerSchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: "course",
-//     select: "-__v  -duration -active -students -durationWeeks ",
-//   });
 
-//   next();
-// });
-
-const Register = mongoose.model("Register", registerSchema);
+const Register = mongoose.model('Register', registerSchema);
 
 module.exports = Register;

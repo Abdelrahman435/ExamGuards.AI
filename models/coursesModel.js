@@ -138,9 +138,9 @@ courseSchema.pre("remove", async function (next) {
     next(err);
   }
 });
-courseSchema.virtual("durationWeeks").get(function () {
-  return Math.floor(this.duration / 7); // Use Math.floor to round down to the nearest integer
-});
+// courseSchema.virtual("durationWeeks").get(function () {
+//   return Math.floor(this.duration / 7); // Use Math.floor to round down to the nearest integer
+// });
 
 const Course = mongoose.model("Course", courseSchema);
 

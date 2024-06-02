@@ -6,11 +6,23 @@ const uploadToCloudinary = require("../middlewares/uploadToCloudinary");
 const examRouter = require("../routes/exams");
 
 const router = express.Router();
-
+router.use(authController.protect);
 router.use("/:courseId/modules", modulesRouter);
 router.use("/:courseId/exams", examRouter);
 
-router.use(authController.protect);
+router.get(
+  "/coursesPerStudent",
+  authController.restrictTo("student"),
+  courseController.getCoursesPerStudent
+);
+
+router.get(
+  "/pending",
+  authController.restrictTo("admin", "super admin"),
+  courseController.getPendingRegistrations
+);
+
+
 
 router
   .route("/")
@@ -62,5 +74,10 @@ router.post(
   courseController.assignInstructor
 );
 
-router.patch("/approve/:studentId/:courseId", courseController.approvedRegistration);
+router.patch(
+  "/approve/:studentId/:courseId",
+  authController.restrictTo("admin", "super admin"),
+  courseController.approvedRegistration
+);
+
 module.exports = router;

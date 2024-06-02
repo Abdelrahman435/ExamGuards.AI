@@ -8,6 +8,7 @@ const AppError = require("./../utils/appError");
 const multerStorage = multer.memoryStorage();
 const factory = require("./handlerFactory");
 const User = require("../models/userModel");
+const mongoose = require("mongoose");
 
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
@@ -20,6 +21,29 @@ const multerFilter = (req, file, cb) => {
 const upload = multer({
   storage: multerStorage,
   fileFilter: multerFilter,
+});
+
+exports.getCoursesPerStudent = catchAsync(async (req, res, next) => {
+  const registerCourses = await Register.find({
+    student: req.user.id,
+  }).populate("course");
+
+  // Extract relevant data from the registerCourses array
+  const courses = registerCourses.map((register) => ({
+    _id: register.course._id,
+    name: register.course.name,
+    description: register.course.description,
+    file: register.course.file,
+    status: register.status, // Add status from Register schema
+  }));
+
+  res.status(200).json({
+    status: "success",
+    results: courses.length,
+    data: {
+      courses: courses,
+    },
+  });
 });
 
 exports.uploadCoursePhoto = upload.single("photo");
@@ -80,7 +104,7 @@ exports.assignInstructor = catchAsync(async (req, res, next) => {
 
 exports.addGrades = factory.updateOne(Register);
 
-exports.getStudentsPerCourse = catchAsync(async (req, res, next) => {});
+// exports.getStudentsPerCourse = catchAsync(async (req, res, next) => {});
 
 exports.approvedRegistration = catchAsync(async (req, res, next) => {
   // Update course with new student
@@ -116,5 +140,30 @@ exports.approvedRegistration = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
+  });
+});
+
+exports.getPendingRegistrations = catchAsync(async (req, res, next) => {
+  const registrations = await Register.find({ status: false })
+    .populate({
+      path: "course", // Assuming 'course' field in Register model references the Course model
+      select: "name", // Selecting only the name field from the Course model
+    })
+    .populate({
+      path: "student", // Assuming 'student' field in Register model references the User model
+      select: "firstName lastName email", // Selecting only the first name, last name, and email fields from the User model
+    });
+
+  const pendingRegistrations = registrations.map((reg) => ({
+    courseId: reg.course._id,
+    courseName: reg.course.name,
+    studentId: reg.student._id,
+    studentName: `${reg.student.firstName} ${reg.student.lastName}`,
+    studentEmail: reg.student.email,
+  }));
+
+  res.status(200).json({
+    status: "success",
+    data: pendingRegistrations,
   });
 });
