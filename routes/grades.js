@@ -18,7 +18,7 @@ router.get(
 );
 
 router.get(
-  "/oneExam/:courseId",
+  "/oneExam/:courseId/:examId",
   authController.restrictTo("instructor"),
   gradesController.getGradesforExam
 );

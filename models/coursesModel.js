@@ -110,6 +110,34 @@ courseSchema.virtual("assign", {
 //   next();
 // });
 
+courseSchema.pre("remove", async function (next) {
+  try {
+    // Delete all related modules
+    await Module.deleteMany({ course: this._id });
+
+    // Delete all related assignments
+    await Assignment.deleteMany({ course: this._id });
+
+    // Delete all related registrations
+    await Register.deleteMany({ course: this._id });
+
+    // Delete all related assigns
+    await Assign.deleteMany({ course: this._id });
+
+    // Delete all related exams
+    await Exam.deleteMany({ course: this._id });
+
+    // Remove the course from all users' courses list
+    await User.updateMany(
+      { courses: this._id },
+      { $pull: { courses: this._id } }
+    );
+
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 courseSchema.virtual("durationWeeks").get(function () {
   return Math.floor(this.duration / 7); // Use Math.floor to round down to the nearest integer
 });

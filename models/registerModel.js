@@ -15,6 +15,10 @@ const registerSchema = new mongoose.Schema(
     },
     grades: [
       {
+        examId: {
+          type: String,
+          required: true,
+        },
         nameOfExam: {
           type: String,
           required: true,

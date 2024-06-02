@@ -83,11 +83,15 @@ exports.objectDetection = async (req, res) => {
 
   try {
     // Make a single request to the Flask endpoint
-    const response = await axios.post("http://127.0.0.1:5000/detect", formData, {
-      headers: {
-        ...formData.getHeaders(),
-      },
-    });
+    const response = await axios.post(
+      "http://127.0.0.1:5000/detect",
+      formData,
+      {
+        headers: {
+          ...formData.getHeaders(),
+        },
+      }
+    );
 
     // Check if any data was returned from the endpoint
     const cheatingDetected = response.data.length > 0;
@@ -150,6 +154,74 @@ exports.faceRecognition = async (req, res) => {
         },
       }
     );
+  });
+
+  try {
+    // Wait for all requests to complete
+    const responses = await Promise.all(uploadPromises);
+
+    // Check if any data was returned from the endpoint indicating no match
+    const cheatingDetected = responses.some((response) =>
+      response.data.some((item) => item.image)
+    );
+
+    if (cheatingDetected) {
+      // Save response data for each image in Cheating model
+      const savedData = [];
+      for (const response of responses) {
+        for (const imageData of response.data) {
+          if (imageData.image) {
+            const cheatingData = {
+              student: req.user.id, // User ID
+              cheatingDetalis: "This student is not the correct student",
+              image: imageData.image,
+            };
+
+            // Save cheating data to database
+            const savedCheating = await Cheating.create(cheatingData);
+            savedData.push(savedCheating);
+          }
+        }
+      }
+      // Send response indicating cheating detected
+      res.status(200).json({ message: "Cheating detected" });
+    } else {
+      // Send response indicating no cheating detected
+      res.status(200).json([{ result: "match" }]);
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  } finally {
+    // Delete uploaded image files
+    imageFiles.forEach((filePath) => {
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error("Error deleting file:", err);
+        }
+      });
+    });
+  }
+};
+
+exports.voiceRecognition = async (req, res) => {
+  const imageFiles = req.files.map((file) => file.path);
+  const referenceImageUrl = req.body.reference_image_url; // Assuming reference_image_url is passed in the request body
+
+  // Convert each image to FormData
+  const formDataArray = imageFiles.map((filePath) => {
+    const formData = new FormData();
+    formData.append("imagefiles", fs.createReadStream(filePath));
+    formData.append("reference_image_url", referenceImageUrl); // Add reference image URL to FormData
+    return formData;
+  });
+
+  // Array to store promises for each image upload to Flask
+  const uploadPromises = formDataArray.map((formData) => {
+    return axios.post("http://127.0.0.1:5000/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   });
 
   try {

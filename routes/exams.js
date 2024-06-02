@@ -23,4 +23,5 @@ router
 
 router.post("/autoGrade/:id", examController.autoGrade);
 
+router.get("/examInfo/:id", examController.examInfo);
 module.exports = router;
