@@ -37,6 +37,10 @@ const examSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    duration: {
+      type: Number,
+      required: true,
+    },
     visiable: {
       type: Boolean,
       required: true,
