@@ -48,25 +48,8 @@ exports.deleteCourse = factory.deleteOne(Course);
 
 exports.changeStatus = factory.changeStatus(Course);
 
-
 exports.registerToCourse = catchAsync(async (req, res, next) => {
   await Register.create({ course: req.params.courseId, student: req.user.id });
-  await Course.findByIdAndUpdate(
-    req.params.courseId,
-    { $push: { students: req.user.id } }, //$push to add to the array
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
-  await User.findByIdAndUpdate(
-    req.user.id,
-    { $push: { courses: req.params.courseId } }, //$push to add to the array
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
   res.status(201).json({
     status: "The course has been registered",
   });
@@ -97,6 +80,41 @@ exports.assignInstructor = catchAsync(async (req, res, next) => {
 
 exports.addGrades = factory.updateOne(Register);
 
-exports.getStudentsPerCourse = catchAsync(async (req, res, next) => {
-  
-})
+exports.getStudentsPerCourse = catchAsync(async (req, res, next) => {});
+
+exports.approvedRegistration = catchAsync(async (req, res, next) => {
+  // Update course with new student
+  const updatedCourse = await Course.findByIdAndUpdate(
+    req.params.courseId,
+    { $push: { students: req.params.studentId } },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  // Update user with new course
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user.id,
+    { $push: { courses: req.params.courseId } },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  // Update registration status
+  await Register.findOneAndUpdate(
+    { course: req.params.courseId, student: req.params.studentId },
+    { status: true },
+    {
+      new: true,
+      upsert: true, // If registration does not exist, create a new one
+      runValidators: true,
+    }
+  );
+
+  res.status(200).json({
+    status: "success",
+  });
+});

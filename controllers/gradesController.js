@@ -40,8 +40,6 @@ exports.getGradesforCourse = catchAsync(async (req, res, next) => {
   });
 });
 
-
-
 exports.getGradesforExam = catchAsync(async (req, res, next) => {
   const courseId = req.params.courseId;
   const examId = req.params.examId;
@@ -50,31 +48,33 @@ exports.getGradesforExam = catchAsync(async (req, res, next) => {
   const exam = await Exam.findById(examId).lean();
   if (!exam) {
     return res.status(404).json({
-      status: 'fail',
-      message: 'Exam not found',
+      status: "fail",
+      message: "Exam not found",
     });
   }
 
   // Calculate the total points of the exam
-  const totalPoints = exam.Questions.reduce((sum, question) => sum + question.Points, 0);
+  const totalPoints = exam.totalpoints
   const passThreshold = totalPoints / 2;
 
   // Find all students registered for the course
-  const registrations = await Register.find({ course: courseId }).populate({
-    path: 'student',
-    select: 'firstName lastName email file', // Selecting the necessary fields
-  }).lean();
+  const registrations = await Register.find({ course: courseId })
+    .populate({
+      path: "student",
+      select: "firstName lastName email file", // Selecting the necessary fields
+    })
+    .lean();
 
-  const results = registrations.map(reg => {
-    const gradeEntry = reg.grades.find(grade => grade.examId === examId);
+  const results = registrations.map((reg) => {
+    const gradeEntry = reg.grades.find((grade) => grade.examId === examId);
     let status, grade;
 
     if (gradeEntry) {
       grade = gradeEntry.grade;
-      status = grade >= passThreshold ? 'passed' : 'failed';
+      status = grade >= passThreshold ? "passed" : "failed";
     } else {
       grade = 0;
-      status = 'absent';
+      status = "absent";
     }
 
     return {
@@ -91,7 +91,7 @@ exports.getGradesforExam = catchAsync(async (req, res, next) => {
   });
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     results: results.length,
     data: {
       grades: results,

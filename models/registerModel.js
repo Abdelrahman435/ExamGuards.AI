@@ -29,6 +29,10 @@ const registerSchema = new mongoose.Schema(
         },
       },
     ],
+    status: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -42,7 +46,7 @@ registerSchema.index({ course: 1, student: 1 }, { unique: true });
 registerSchema.pre(/^find/, function (next) {
   this.populate({
     path: "student",
-    select: " firstName lastName email _id",
+    select: " firstName lastName email _id file",
   }); // here to make the output contains the details of the instructor we should write populating
 
   next();
@@ -52,7 +56,7 @@ registerSchema.pre(/^find/, function (next) {
 //   this.populate({
 //     path: "course",
 //     select: "-__v  -duration -active -students -durationWeeks ",
-//   }); 
+//   });
 
 //   next();
 // });
