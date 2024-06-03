@@ -23,6 +23,24 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 
+exports.getCoursesForStudent = catchAsync(async (req, res, next) => {
+  const enrolledCourses = req.user.courses;
+
+  const allCourses = await Course.find({ active: true });
+
+  const availableCourses = allCourses.filter(
+    (course) => !enrolledCourses.includes(course._id.toString())
+  );
+
+  res.status(200).json({
+    status: "success",
+    results: availableCourses.length,
+    data: {
+      courses: availableCourses,
+    },
+  });
+});
+
 exports.getCoursesPerStudent = catchAsync(async (req, res, next) => {
   const registerCourses = await Register.find({
     student: req.user.id,
@@ -74,6 +92,15 @@ exports.changeStatus = factory.changeStatus(Course);
 
 exports.registerToCourse = catchAsync(async (req, res, next) => {
   await Register.create({ course: req.params.courseId, student: req.user.id });
+
+  await User.findByIdAndUpdate(
+    req.user.id,
+    { $push: { courses: req.params.courseId } },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
   res.status(201).json({
     status: "The course has been registered",
   });
@@ -111,16 +138,6 @@ exports.approvedRegistration = catchAsync(async (req, res, next) => {
   const updatedCourse = await Course.findByIdAndUpdate(
     req.params.courseId,
     { $push: { students: req.params.studentId } },
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
-
-  // Update user with new course
-  const updatedUser = await User.findByIdAndUpdate(
-    req.user.id,
-    { $push: { courses: req.params.courseId } },
     {
       new: true,
       runValidators: true,

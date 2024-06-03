@@ -17,12 +17,16 @@ router.get(
 );
 
 router.get(
+  "/coursesForStudent",
+  authController.restrictTo("student"),
+  courseController.getCoursesForStudent
+);
+
+router.get(
   "/pending",
   authController.restrictTo("admin", "super admin"),
   courseController.getPendingRegistrations
 );
-
-
 
 router
   .route("/")
