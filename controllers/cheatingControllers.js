@@ -33,6 +33,7 @@ exports.detectCheating = async (req, res) => {
       const savedData = [];
       for (const imageData of objectDetectionResponse.data) {
         const cheatingData = {
+          examId: req.params.examId,
           student: req.user.id, // User ID
           cheatingDetalis: imageData.objects,
           image: imageData.URL,
@@ -78,6 +79,7 @@ exports.detectCheating = async (req, res) => {
       eyeTrackingResponses.forEach((response) => {
         response.data.forEach(async (imageData) => {
           const cheatingData = {
+            examId: req.params.examId,
             student: req.user.id, // User ID
             cheatingDetalis: imageData.Direction,
             image: imageData.URL,
@@ -277,6 +279,7 @@ exports.faceRecognition = async (req, res) => {
         for (const imageData of response.data) {
           if (imageData.image) {
             const cheatingData = {
+              examId: req.params.examId,
               student: req.user.id, // User ID
               cheatingDetalis: "This student is not the correct student",
               image: imageData.image,
@@ -341,6 +344,7 @@ exports.voiceRecognition = async (req, res) => {
       for (const response of responses) {
         if (response.data.talking_detected) {
           const cheatingData = {
+            examId: req.params.examId,
             student: req.user.id, // User ID
             cheatingDetalis: ["Talking detected"],
             image: response.data.file_url, // URL of the voice file

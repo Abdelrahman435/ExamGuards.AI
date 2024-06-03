@@ -10,7 +10,7 @@ router.use(authController.protect);
 const upload = multer({ dest: "uploads/" });
 
 router.post(
-  "/analyzeImages",
+  "/analyzeImages/:examId",
   upload.array("file"), // Ensure this matches the expected attribute in the request
   cheatingController.detectCheating
 );
@@ -24,14 +24,14 @@ router.post(
 //   cheatingController.objectDetection
 // );
 
-// router.post(
-//   "/faceRecognition",
-//   upload.array("image_files"),
-//   cheatingController.faceRecognition
-// );
+router.post(
+  "/faceRecognition/:examId",
+  upload.array("image_files"),
+  cheatingController.faceRecognition
+);
 
 router.post(
-  "/voiceRecognition",
+  "/voiceRecognition/:examId",
   upload.array("voice_files"),
   cheatingController.voiceRecognition
 );

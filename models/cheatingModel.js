@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const cheatingSchema = new mongoose.Schema(
   {
+    examId: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Exam", // Should match the model name exactly
+      required: true,
+    },
     student: {
       type: mongoose.Schema.ObjectId,
       ref: "User", // Should match the model name exactly
