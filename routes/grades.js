@@ -23,4 +23,10 @@ router.get(
   gradesController.getGradesforExam
 );
 
+router.patch(
+  "/addGrade/:courseId/:studentId/:examId",
+  authController.restrictTo("instructor"),
+  gradesController.addGrades
+);
+
 module.exports = router;

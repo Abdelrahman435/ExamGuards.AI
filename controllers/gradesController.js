@@ -54,7 +54,7 @@ exports.getGradesforExam = catchAsync(async (req, res, next) => {
   }
 
   // Calculate the total points of the exam
-  const totalPoints = exam.totalpoints
+  const totalPoints = exam.totalpoints;
   const passThreshold = totalPoints / 2;
 
   // Find all students registered for the course
@@ -99,6 +99,33 @@ exports.getGradesforExam = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.addGrades = catchAsync(async (req, res, next) => {
+  const { courseId, studentId, examId } = req.params;
+  const { grade } = req.body;
+
+  const updatedRegister = await Register.findOneAndUpdate(
+    { course: courseId, student: studentId, "grades.examId": examId },
+    { $set: { "grades.$.grade": grade } },
+    {
+      new: true,
+      upsert: true, // If registration does not exist, create a new one
+      runValidators: true,
+    }
+  );
+
+  // If the grade for the exam doesn't exist, add it to the grades array
+  if (!updatedRegister) {
+    await Register.findOneAndUpdate(
+      { course: courseId, student: studentId },
+      { $push: { grades: { examId, grade } } },
+      { new: true, upsert: true, runValidators: true }
+    );
+  }
+
+  res.status(200).json({
+    status: "success",
+  });
+});
 // exports.update = catchAsync(async (req, res, next) => {
 //   const grade = await Register.findByIdAndUpdate({grades: grade.})
 // });

@@ -67,12 +67,6 @@ router.post(
   courseController.registerToCourse
 );
 
-router.patch(
-  "/addGrade/:id",
-  authController.restrictTo("instructor"),
-  courseController.addGrades
-);
-
 router.post(
   "/assign",
   authController.restrictTo("admin", "super admin"),
