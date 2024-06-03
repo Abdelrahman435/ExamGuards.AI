@@ -51,6 +51,7 @@ router
   )
   .delete(
     authController.restrictTo("admin", "super admin"),
+    courseController.deleteRelatedData,
     courseController.deleteCourse
   );
 

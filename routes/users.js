@@ -5,7 +5,13 @@ const userController = require("../controllers/usersControllers");
 // const uploader = require("../middlewares/uploadImages");
 const uploadToCloudinary = require("../middlewares/uploadToCloudinary");
 
-router.post("/signup", authController.signup);
+router.post(
+  "/signup",
+  authController.uploadCoursePhoto,
+  authController.resizeCoursePhoto,
+  uploadToCloudinary,
+  authController.signup
+);
 router.post("/login", authController.login);
 router.post("/forgotPassword", authController.forgotPassword);
 router.patch("/resetPassword/:token", authController.resetPassword);

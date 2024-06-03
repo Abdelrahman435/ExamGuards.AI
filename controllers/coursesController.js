@@ -1,5 +1,6 @@
 const Course = require("../models/coursesModel");
 const Register = require("../models/registerModel");
+const Exam = require("../models/examsModel");
 const Assign = require("../models/assugnInstructors");
 const catchAsync = require("./../utils/catchAsync");
 const multer = require("multer");
@@ -9,6 +10,7 @@ const multerStorage = multer.memoryStorage();
 const factory = require("./handlerFactory");
 const User = require("../models/userModel");
 const mongoose = require("mongoose");
+const Modules = require("../models/modulesModel");
 
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
@@ -75,6 +77,18 @@ exports.resizeCoursePhoto = catchAsync(async (req, res, next) => {
     .resize(500, 500)
     .toFormat("jpeg")
     .jpeg({ quality: 90 });
+  next();
+});
+
+exports.deleteRelatedData = catchAsync(async (req, res, next) => {
+  const model = await Course.findById(req.params.id);
+  await Modules.deleteMany({ course: model.id });
+  await Register.deleteMany({ course: model.id });
+  await Exam.deleteMany({ course: model.id });
+  await User.updateMany(
+    { courses: model._id },
+    { $pull: { courses: model._id } }
+  );
   next();
 });
 

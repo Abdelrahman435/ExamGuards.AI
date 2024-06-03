@@ -5,6 +5,24 @@ const jwt = require("jsonwebtoken");
 const AppError = require("../utils/appError");
 const Email = require("../utils/email");
 const crypto = require("crypto");
+const cloudinary = require("../utils/cloudinary");
+const multer = require("multer");
+const sharp = require("sharp");
+const multerStorage = multer.memoryStorage();
+
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Not an image! Please upload only images.", 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -34,7 +52,22 @@ const createSendToken = (user, statusCode, req, res) => {
   });
 };
 
+exports.uploadCoursePhoto = upload.single("photo");
+
+exports.resizeCoursePhoto = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `Course-${Date.now()}.jpeg`;
+
+  await sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 });
+  next();
+});
+
 exports.signup = catchAsync(async (req, res, next) => {
+  if (req.file) req.body.file = req.cloudinaryResult.secure_url;
   const newUser = await User.create(req.body);
   let url;
   await new Email(newUser, url).sendWelcome();
