@@ -373,3 +373,17 @@ exports.voiceRecognition = async (req, res) => {
     });
   }
 };
+
+exports.getCheatingsforExam = catchAsync(async (req, res, next) => {
+  const fraudCases = await Cheating.find({
+    examId: req.params.examId,
+  }).populate("student", "firstName lastName email file"); // Assuming 'student' and 'file' are the field names referencing student and file/email respectively in your Cheating schema
+
+  res.status(200).json({
+    status: "success",
+    results: fraudCases.length,
+    data: {
+      fraudCases: fraudCases,
+    },
+  });
+});
