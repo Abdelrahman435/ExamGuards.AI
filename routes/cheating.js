@@ -8,19 +8,31 @@ router.use(authController.protect);
 
 // Define storage for multer
 const upload = multer({ dest: "uploads/" });
+
+router.post(
+  "/analyzeImages",
+  upload.array("file"), // Ensure this matches the expected attribute in the request
+  cheatingController.detectCheating
+);
+
 // Route to handle cheating detection
-router.post("/", upload.array("image_files"), cheatingController.eyeTracking);
+// router.post("/", upload.array("image_files"), cheatingController.eyeTracking);
+
+// router.post(
+//   "/objects",
+//   upload.array("image_files"),
+//   cheatingController.objectDetection
+// );
+
+// router.post(
+//   "/faceRecognition",
+//   upload.array("image_files"),
+//   cheatingController.faceRecognition
+// );
 
 router.post(
-  "/objects",
-  upload.array("image_files"),
-  cheatingController.objectDetection
+  "/voiceRecognition",
+  upload.array("voice_files"),
+  cheatingController.voiceRecognition
 );
-
-router.post(
-  "/faceRecognition",
-  upload.array("image_files"),
-  cheatingController.faceRecognition
-);
-
 module.exports = router;
