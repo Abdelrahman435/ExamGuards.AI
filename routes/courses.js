@@ -79,4 +79,10 @@ router.patch(
   courseController.approvedRegistration
 );
 
+router.patch(
+  "/removeAllStudents/:id",
+  authController.restrictTo("admin", "super admin"),
+  courseController.deleteAllStudents
+);
+
 module.exports = router;

@@ -25,6 +25,19 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 
+exports.deleteAllStudents = catchAsync(async (req, res, next) => {
+  await Course.updateMany({}, { $set: { students: [] } });
+  await Register.deleteMany({ course: req.params.id });
+  await User.updateMany(
+    { courses: req.params.id, type: "student" },
+    { $pull: { courses: req.params.id } }
+  );
+  res.status(200).json({
+    status: "success",
+    message: "All students have been removed from all courses",
+  });
+});
+
 exports.getCoursesForStudent = catchAsync(async (req, res, next) => {
   const enrolledCourses = req.user.courses;
 
@@ -81,13 +94,12 @@ exports.resizeCoursePhoto = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteRelatedData = catchAsync(async (req, res, next) => {
-  const model = await Course.findById(req.params.id);
-  await Modules.deleteMany({ course: model.id });
-  await Register.deleteMany({ course: model.id });
-  await Exam.deleteMany({ course: model.id });
+  await Modules.deleteMany({ course: req.params.id });
+  await Register.deleteMany({ course: req.params.id });
+  await Exam.deleteMany({ course: req.params.id });
   await User.updateMany(
-    { courses: model._id },
-    { $pull: { courses: model._id } }
+    { courses: req.params.id },
+    { $pull: { courses: req.params.id } }
   );
   next();
 });
