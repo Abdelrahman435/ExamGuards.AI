@@ -4,13 +4,37 @@ const User = require("../models/userModel");
 const Exam = require("../models/examsModel");
 
 exports.getGradesforstudent = catchAsync(async (req, res, next) => {
-  const grades = await Register.find({ student: req.user.id });
+  const gradesData = await Register.findOne({
+    student: req.user.id,
+    course: req.params.courseId,
+  })
+    .populate({
+      path: "student",
+      select: "-firstName -lastName -email -file",
+    })
+    .populate({
+      path: "course",
+      select: "-name -description -file",
+    });
+
+  if (!gradesData) {
+    return res.status(404).json({
+      status: "fail",
+      message: "No grades found for this student in this course.",
+    });
+  }
+
+  // Extract the grades array
+  const grades = gradesData.grades;
+
+  // Calculate the total grade
+  const totalGrade = grades.reduce((sum, grade) => sum + grade.grade, 0);
 
   res.status(200).json({
     status: "success",
-    results: grades.length,
     data: {
-      data: grades,
+      grades,
+      totalGrade,
     },
   });
 });

@@ -6,7 +6,7 @@ const authController = require("../controllers/authController");
 router.use(authController.protect);
 
 router.get(
-  "/student",
+  "/student/:courseId",
   authController.restrictTo("student"),
   gradesController.getGradesforstudent
 );
