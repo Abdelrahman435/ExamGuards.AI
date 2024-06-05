@@ -133,11 +133,11 @@ exports.checkStudentTookExam = catchAsync(async (req, res, next) => {
 
   if (check) {
     return res.status(200).json({
-      result: false,
+      massage: false,
     });
   } else {
     return res.status(200).json({
-      result: true,
+      massage: true,
     });
   }
 });
