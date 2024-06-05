@@ -163,6 +163,34 @@ exports.addGrades = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getGradesExamStudent = catchAsync(async (req, res, next) => {
+  const examId = req.params.examId;
+  const grades = await Register.findOne({
+    student: req.user.id,
+    "grades.examId": examId,
+  });
+
+  if (!grades) {
+    return res.status(404).json({
+      status: "fail",
+      message: "No grades found for the provided examId",
+    });
+  }
+
+  const grade = grades.grades.find((grade) => grade.examId === examId);
+
+  if (!grade) {
+    return res.status(404).json({
+      status: "fail",
+      message: "No grade found for the provided examId",
+    });
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: grade,
+  });
+});
 
 // exports.update = catchAsync(async (req, res, next) => {
 //   const grade = await Register.findByIdAndUpdate({grades: grade.})

@@ -66,7 +66,6 @@ exports.getCoursesPerStudent = catchAsync(async (req, res, next) => {
   const registerCourses = await Register.find({
     student: req.user.id,
   }).populate("course");
-
   // Extract relevant data from the registerCourses array
   const courses = registerCourses.map((register) => ({
     _id: register.course._id,
@@ -74,6 +73,7 @@ exports.getCoursesPerStudent = catchAsync(async (req, res, next) => {
     description: register.course.description,
     file: register.course.file,
     status: register.status, // Add status from Register schema
+    duration: register.course.duration,
   }));
 
   res.status(200).json({

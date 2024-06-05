@@ -29,4 +29,6 @@ router.patch(
   gradesController.addGrades
 );
 
+router.get("/gradesForExam/:examId", gradesController.getGradesExamStudent);
+
 module.exports = router;

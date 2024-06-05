@@ -104,14 +104,15 @@ courseSchema.virtual("assign", {
 //   this.instructors = await Promise.all(instructorsPromises);
 // });
 
-// courseSchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: "instructors",
-//     select: "-__v -updatedAt -createdAt -courses -role ",
-//   }); // here to make the output contains the details of the instructor we should write populating
+courseSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "instructors",
+    select: "firstName lastName",
+  }); // here to make the output contains the details of the instructor we should write populating
 
-//   next();
-// });
+  next();
+});
+
 // courseSchema.virtual("durationWeeks").get(function () {
 //   return Math.floor(this.duration / 7); // Use Math.floor to round down to the nearest integer
 // });

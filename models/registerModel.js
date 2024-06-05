@@ -58,7 +58,7 @@ registerSchema.pre(/^find/, function (next) {
     select: "firstName lastName email _id file",
   }).populate({
     path: "course",
-    select: "name description file status  -active ", // Specify fields to include and exclude
+    select: "name description file status duration instructors -active ", // Specify fields to include and exclude
   });
 
   next();
