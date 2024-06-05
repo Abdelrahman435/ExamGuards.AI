@@ -4,7 +4,7 @@ const AppError = require("../utils/appError");
 const factory = require("./handlerFactory");
 const Register = require("../models/registerModel");
 const Course = require("../models/coursesModel");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 exports.setuserId = catchAsync(async (req, res, next) => {
   req.body.createdBy = req.user.id;
@@ -45,6 +45,9 @@ exports.autoGrade = catchAsync(async (req, res, next) => {
       grade += data[i].Points;
     }
   }
+  const totalPoints = exam.totalpoints;
+  const passThreshold = totalPoints / 2;
+  let status = grade >= passThreshold ? "passed" : "failed";
 
   const filter = { student: req.user.id, course: req.body.course };
   const update = {
@@ -53,6 +56,7 @@ exports.autoGrade = catchAsync(async (req, res, next) => {
         examId: req.params.id,
         nameOfExam: req.body.title,
         grade: grade,
+        status: status,
       },
     },
   };
@@ -64,7 +68,7 @@ exports.autoGrade = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    grade: grade, // Total grade
+    results: { grade, status }, // Total grade
   });
 });
 
@@ -75,13 +79,13 @@ exports.examInfo = catchAsync(async (req, res, next) => {
   const exam = await Exam.findById(examId).lean();
   if (!exam) {
     return res.status(404).json({
-      status: 'fail',
-      message: 'Exam not found',
+      status: "fail",
+      message: "Exam not found",
     });
   }
 
   // Calculate the total points of the exam
-  const totalPoints = exam.totalpoints
+  const totalPoints = exam.totalpoints;
   const passThreshold = totalPoints / 2;
 
   // Fetch all registrations related to the course of the exam
@@ -91,25 +95,24 @@ exports.examInfo = catchAsync(async (req, res, next) => {
   let studentsAttended = 0;
   let studentsPassed = 0;
   let studentsFailed = 0;
+  let studentsAbsent = 0;
 
   // Calculate the number of students who attended, passed, and failed the exam
-  registrations.forEach(reg => {
-    const gradeEntry = reg.grades.find(grade => grade.examId === examId);
-    if (gradeEntry) {
+  registrations.forEach((reg) => {
+    const gradeEntry = reg.grades.find((grade) => grade.examId === examId);
+    if (gradeEntry.status == "absent") {
+      studentsAbsent++;
+    } else if (gradeEntry.status == "passed") {
+      studentsPassed++;
       studentsAttended++;
-      if (gradeEntry.grade >= passThreshold) {
-        studentsPassed++;
-      } else {
-        studentsFailed++;
-      }
+    } else {
+      studentsFailed++;
+      studentsAttended++;
     }
   });
 
-  // Calculate the number of students who were absent
-  const studentsAbsent = totalRegisteredStudents - studentsAttended;
-
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
       totalRegisteredStudents,
       studentsAttended,

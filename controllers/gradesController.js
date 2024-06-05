@@ -18,8 +18,7 @@ exports.getGradesforstudent = catchAsync(async (req, res, next) => {
     });
 
   if (!gradesData) {
-    return res.status(404).json({
-      status: "fail",
+    return res.status(200).json({
       message: "No grades found for this student in this course.",
     });
   }
@@ -77,10 +76,6 @@ exports.getGradesforExam = catchAsync(async (req, res, next) => {
     });
   }
 
-  // Calculate the total points of the exam
-  const totalPoints = exam.totalpoints;
-  const passThreshold = totalPoints / 2;
-
   // Find all students registered for the course
   const registrations = await Register.find({ course: courseId })
     .populate({
@@ -89,30 +84,47 @@ exports.getGradesforExam = catchAsync(async (req, res, next) => {
     })
     .lean();
 
-  const results = registrations.map((reg) => {
-    const gradeEntry = reg.grades.find((grade) => grade.examId === examId);
-    let status, grade;
+  const results = await Promise.all(
+    registrations.map(async (reg) => {
+      const gradeEntry = reg.grades.find((grade) => grade.examId === examId);
+      let status, grade;
 
-    if (gradeEntry) {
-      grade = gradeEntry.grade;
-      status = grade >= passThreshold ? "passed" : "failed";
-    } else {
-      grade = 0;
-      status = "absent";
-    }
+      if (gradeEntry) {
+        grade = gradeEntry.grade;
+        status = gradeEntry.status;
+      } else {
+        grade = 0;
+        status = "absent";
 
-    return {
-      student: {
-        _id: reg.student._id,
-        firstName: reg.student.firstName,
-        lastName: reg.student.lastName,
-        email: reg.student.email,
-        file: reg.student.file, // Assuming the file field contains the image
-      },
-      grade,
-      status,
-    };
-  });
+        // Push a new entry to the grades array
+        await Register.updateOne(
+          { _id: reg._id },
+          {
+            $push: {
+              grades: {
+                examId: examId,
+                nameOfExam: exam.title, // Assuming exam has a title field
+                grade: 0,
+                status: "absent",
+              },
+            },
+          }
+        );
+      }
+
+      return {
+        student: {
+          _id: reg.student._id,
+          firstName: reg.student.firstName,
+          lastName: reg.student.lastName,
+          email: reg.student.email,
+          file: reg.student.file, // Assuming the file field contains the image
+        },
+        grade,
+        status,
+      };
+    })
+  );
 
   res.status(200).json({
     status: "success",

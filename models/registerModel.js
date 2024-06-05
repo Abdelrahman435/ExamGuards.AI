@@ -27,6 +27,11 @@ const registerSchema = new Schema(
           type: Number,
           required: true,
         },
+        status: {
+          type: String,
+          enum: ["passed", "absent","failed"],
+          default: "passed",
+        },
       },
     ],
     status: {
