@@ -162,6 +162,8 @@ exports.addGrades = catchAsync(async (req, res, next) => {
     status: "success",
   });
 });
+
+
 // exports.update = catchAsync(async (req, res, next) => {
 //   const grade = await Register.findByIdAndUpdate({grades: grade.})
 // });

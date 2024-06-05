@@ -15,7 +15,8 @@ router
     uploadToCloudinary, // Ensure this middleware is before creating the material
     modulesController.setCourseUserIds,
     modulesController.createModule
-  ).get(modulesController.getAllModules);
+  )
+  .get(modulesController.getAllModules);
 
 router
   .route("/:id")
@@ -30,5 +31,11 @@ router
     authController.restrictTo("instructor"),
     modulesController.deleteModule
   );
+
+router.patch("/prograss/:courseId/:moduleId", modulesController.addprograss);
+
+router.patch("/decprograss/:courseId/:moduleId", modulesController.decprograss);
+
+router.get("/getPrograss/:courseId", modulesController.getprograss);
 
 module.exports = router;

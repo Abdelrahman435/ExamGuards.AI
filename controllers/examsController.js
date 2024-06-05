@@ -124,3 +124,26 @@ exports.examInfo = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.checkStudentTookExam = catchAsync(async (req, res, next) => {
+  // Find the student and their grades for the specific exam
+  const check = await Register.findOne({
+    student: req.user.id,
+    "grades.examId": req.params.examId,
+  });
+
+  // Log the retrieved document for debugging purposes
+  console.log(check);
+
+  // If a record is found and it contains a grade for the exam, return false
+  if (check) {
+    return res.status(200).json({
+      status: false,
+    });
+  } else {
+    // If no record is found or no grade for the exam exists, return true
+    return res.status(200).json({
+      status: true,
+    });
+  }
+});

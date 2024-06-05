@@ -26,6 +26,18 @@ const modulesSchema = new mongoose.Schema(
       ref: "User", // Should match the model name exactly
       required: true,
     },
+    prograss: [
+      {
+        studentId: {
+          type: String,
+          required: true,
+        },
+        status: {
+          type: Boolean,
+          default: false,
+        },
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
