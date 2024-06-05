@@ -65,7 +65,14 @@ exports.getCoursesForStudent = catchAsync(async (req, res, next) => {
 exports.getCoursesPerStudent = catchAsync(async (req, res, next) => {
   const registerCourses = await Register.find({
     student: req.user.id,
-  }).populate("course");
+  }).populate({
+    path: "course",
+    populate: {
+      path: "instructors",
+      select: "firstName lastName",
+    },
+  });
+
   // Extract relevant data from the registerCourses array
   const courses = registerCourses.map((register) => ({
     _id: register.course._id,
@@ -74,6 +81,10 @@ exports.getCoursesPerStudent = catchAsync(async (req, res, next) => {
     file: register.course.file,
     status: register.status, // Add status from Register schema
     duration: register.course.duration,
+    instructors: register.course.instructors.map((instructor) => ({
+      firstName: instructor.firstName,
+      lastName: instructor.lastName,
+    })),
   }));
 
   res.status(200).json({
