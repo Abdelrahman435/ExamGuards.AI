@@ -30,11 +30,8 @@ router.post(
   cheatingController.faceRecognition
 );
 
-router.post(
-  "/voiceRecognition/:examId",
-  upload.array("voice_files"),
-  cheatingController.voiceRecognition
-);
+router.post('/voiceRecognition/:examId', upload.single('voice_file'), cheatingController.voiceRecognition);
+
 
 router.get("/fraudCases/:examId", cheatingController.getCheatingsforExam);
 module.exports = router;
