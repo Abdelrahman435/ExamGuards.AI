@@ -292,10 +292,10 @@ exports.faceRecognition = async (req, res) => {
         }
       }
       // Send response indicating cheating detected
-      res.status(200).json({ message: "Cheating detected" });
+      res.status(200).json({ message: "Not Matching" });
     } else {
       // Send response indicating no cheating detected
-      res.status(200).json({ message: "No cheating detected" });
+      res.status(200).json({ message: "Matching" });
     }
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
