@@ -314,48 +314,45 @@ exports.faceRecognition = async (req, res) => {
 };
 
 exports.voiceRecognition = async (req, res) => {
-  const files = req.files.map((file) => file.path);
+  const file = req.file; // Get the single file from the request
 
-  // Convert each voice file to FormData
-  const formDataArray = files.map((filePath) => {
-    const formData = new FormData();
-    formData.append("file", fs.createReadStream(filePath));
-    return formData;
-  });
+  if (!file) {
+    return res.status(400).json({ error: "No file uploaded" });
+  }
 
-  // Array to store promises for each voice file upload to Flask
-  const uploadPromises = formDataArray.map((formData) => {
-    return axios.post("http://127.0.0.1:5000/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+  const filePath = file.path;
+
+  // Log the file path and original name for debugging
+  console.log(`File path: ${filePath}, Original name: ${file.originalname}`);
+
+  const formData = new FormData();
+  formData.append("file", fs.createReadStream(filePath), {
+    filename: file.originalname, // Use the original file name
+    contentType: 'audio/mpeg' // Set the appropriate MIME type
   });
 
   try {
-    // Wait for all requests to complete
-    const responses = await Promise.all(uploadPromises);
+    // Send the file to the Flask server
+    const response = await axios.post("http://127.0.0.1:5000/upload", formData, {
+      headers: {
+        ...formData.getHeaders(), // Ensure the correct headers are set
+      },
+    });
 
-    // Check if any talking was detected in the response
-    const talkingDetected = responses.some(
-      (response) => response.data.talking_detected
-    );
+    // Check if talking was detected in the response
+    const talkingDetected = response.data.talking_detected;
 
     if (talkingDetected) {
-      // Save response data for each voice file in Cheating model
-      for (const response of responses) {
-        if (response.data.talking_detected) {
-          const cheatingData = {
-            examId: req.params.examId,
-            student: req.user.id, // User ID
-            cheatingDetalis: ["Talking detected"],
-            image: response.data.file_url, // URL of the voice file
-          };
+      const cheatingData = {
+        examId: req.params.examId,
+        student: req.user.id, // User ID
+        cheatingDetalis: ["Talking detected"],
+        image: response.data.file_url, // URL of the voice file
+      };
 
-          // Save cheating data to database
-          await Cheating.create(cheatingData);
-        }
-      }
+      // Save cheating data to the database
+      await Cheating.create(cheatingData);
+
       // Send response indicating talking detected
       res.status(200).json({ message: "Cheating detected" });
     } else {
@@ -363,18 +360,18 @@ exports.voiceRecognition = async (req, res) => {
       res.status(200).json({ message: "No cheating detected" });
     }
   } catch (error) {
+    console.error('Error uploading to Flask:', error.message);
     res.status(500).json({ error: "Internal server error" });
   } finally {
-    // Delete uploaded voice files
-    files.forEach((filePath) => {
-      fs.unlink(filePath, (err) => {
-        if (err) {
-          console.error("Error deleting file:", err);
-        }
-      });
+    // Delete the uploaded voice file
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+      }
     });
   }
 };
+
 
 exports.getCheatingsforExam = catchAsync(async (req, res, next) => {
   const fraudCases = await Cheating.find({
