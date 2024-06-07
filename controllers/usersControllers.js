@@ -6,6 +6,10 @@ const sharp = require("sharp");
 const factory = require("./handlerFactory");
 const cloudinary = require("../utils/cloudinary");
 const Email = require("../utils/email");
+const Course = require("../models/coursesModel");
+const Exam = require("../models/examsModel");
+const Register = require("../models/registerModel");
+const Cheating = require("../models/cheatingModel");
 
 const multerStorage = multer.memoryStorage();
 
@@ -96,3 +100,76 @@ exports.updateUser = factory.updateOne(User);
 exports.getAllUsers = factory.getAll(User);
 
 exports.getUser = factory.getOne(User);
+
+exports.getStatistics = catchAsync(async (req, res, next) => {
+  const numberOfCourses = await Course.countDocuments();
+
+  // Get the number of students
+  const numberOfStudents = await User.countDocuments({ role: "student" });
+
+  // Get the number of instructors
+  const numberOfInstructors = await User.countDocuments({ role: "instructor" });
+
+  // Get the number of exams
+  const numberOfExams = await Exam.countDocuments();
+
+  // Get the average of grades on all courses
+  const averageGrades = await Register.aggregate([
+    { $unwind: "$grades" },
+    {
+      $group: {
+        _id: null,
+        averageGrade: { $avg: "$grades.grade" },
+      },
+    },
+  ]);
+
+  // Get the number of students who passed, failed, and were absent
+  const statusCounts = await Register.aggregate([
+    { $unwind: "$grades" },
+    {
+      $group: {
+        _id: "$grades.status",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const statusCountsMap = statusCounts.reduce((acc, curr) => {
+    acc[curr._id] = curr.count;
+    return acc;
+  }, {});
+
+  const passedCount = statusCountsMap.passed || 0;
+  const failedCount = statusCountsMap.failed || 0;
+  const absentCount = statusCountsMap.absent || 0;
+
+  // Get the average number of cheating incidents
+  const cheatingCounts = await Cheating.aggregate([
+    {
+      $group: {
+        _id: null,
+        averageCheatingIncidents: { $avg: { $size: "$cheatingDetalis" } },
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      numberOfCourses,
+      numberOfStudents,
+      numberOfInstructors,
+      numberOfExams,
+      averageGrade:
+        averageGrades.length > 0 ? averageGrades[0].averageGrade : 0,
+      passedCount,
+      failedCount,
+      absentCount,
+      averageCheatingIncidents:
+        cheatingCounts.length > 0
+          ? cheatingCounts[0].averageCheatingIncidents
+          : 0,
+    },
+  });
+});

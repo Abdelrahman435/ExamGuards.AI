@@ -28,6 +28,8 @@ router.patch(
   userController.updateMe
 );
 
+router.get("/statistics", userController.getStatistics);
+
 router.use(authController.restrictTo("admin", "super admin"));
 
 router.patch("/activate/:id", userController.changeStatus);
@@ -38,4 +40,5 @@ router
   .patch(userController.updateUser);
 
 router.get("/", userController.getAllUsers);
+
 module.exports = router;
