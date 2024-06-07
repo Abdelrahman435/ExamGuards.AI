@@ -41,8 +41,8 @@ exports.autoGrade = catchAsync(async (req, res, next) => {
     if (
       correctAnswers.some((answer) => answer.body.toLowerCase() === userAnswer)
     ) {
-      // Convert correct answer to lowercase for case-insensitive comparison
-      grade += data[i].Points;
+
+      grade += Number(data[i].Points); 
     }
   }
   const totalPoints = exam.totalpoints;
