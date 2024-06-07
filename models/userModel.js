@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema(
     file: {
       type: String,
       default: "https://teachable-58941829a392.herokuapp.com/user_1.png",
+      required: [true, "Please provide a Photo"],
     },
     role: {
       type: String,
