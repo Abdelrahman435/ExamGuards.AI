@@ -108,7 +108,8 @@ const examSchema = new mongoose.Schema(
   }
 );
 
-examSchema.methods.updateStatus = function () {
+// Modified updateStatus method to save the updated status
+examSchema.methods.updateStatus = async function () {
   const now = new Date();
 
   const startedAtDate = new Date(this.startedAt);
@@ -125,7 +126,25 @@ examSchema.methods.updateStatus = function () {
   } else {
     this.status = "coming-soon";
   }
+
+  await this.save(); // Save the updated status
 };
+
+// Added pre-find middleware to update status before any find operations
+examSchema.pre('find', async function (next) {
+  const docs = await this.model.find(this.getFilter());
+  await Promise.all(docs.map(doc => doc.updateStatus()));
+  next();
+});
+
+// Added pre-findOne middleware to update status before any findOne operations
+examSchema.pre('findOne', async function (next) {
+  const doc = await this.model.findOne(this.getFilter());
+  if (doc) {
+    await doc.updateStatus();
+  }
+  next();
+});
 
 const Exam = mongoose.model("Exam", examSchema);
 
