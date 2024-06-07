@@ -86,6 +86,11 @@ exports.getGradesforExam = catchAsync(async (req, res, next) => {
 
   const results = await Promise.all(
     registrations.map(async (reg) => {
+      if (!reg.student) {
+        // Skip this registration if student is null
+        return null;
+      }
+
       const gradeEntry = reg.grades.find((grade) => grade.examId === examId);
       let status, grade;
 
@@ -126,11 +131,14 @@ exports.getGradesforExam = catchAsync(async (req, res, next) => {
     })
   );
 
+  // Filter out any null results
+  const filteredResults = results.filter(result => result !== null);
+
   res.status(200).json({
     status: "success",
-    results: results.length,
+    results: filteredResults.length,
     data: {
-      grades: results,
+      grades: filteredResults,
     },
   });
 });
