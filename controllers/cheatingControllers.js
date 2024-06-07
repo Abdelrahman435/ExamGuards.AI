@@ -3,6 +3,7 @@ const FormData = require("form-data");
 const fs = require("fs");
 const catchAsync = require("../utils/catchAsync");
 const Cheating = require("../models/cheatingModel");
+const factory = require("./handlerFactory");
 
 // exports.detectCheating = async (req, res) => {
 //   const imageFiles = req.files.map((file) => file.path);
@@ -328,16 +329,20 @@ exports.voiceRecognition = async (req, res) => {
   const formData = new FormData();
   formData.append("file", fs.createReadStream(filePath), {
     filename: file.originalname, // Use the original file name
-    contentType: 'audio/mpeg' // Set the appropriate MIME type
+    contentType: "audio/mpeg", // Set the appropriate MIME type
   });
 
   try {
     // Send the file to the Flask server
-    const response = await axios.post("http://127.0.0.1:5000/upload", formData, {
-      headers: {
-        ...formData.getHeaders(), // Ensure the correct headers are set
-      },
-    });
+    const response = await axios.post(
+      "http://127.0.0.1:5000/upload",
+      formData,
+      {
+        headers: {
+          ...formData.getHeaders(), // Ensure the correct headers are set
+        },
+      }
+    );
 
     // Check if talking was detected in the response
     const talkingDetected = response.data.talking_detected;
@@ -360,7 +365,7 @@ exports.voiceRecognition = async (req, res) => {
       res.status(200).json({ message: "No cheating detected" });
     }
   } catch (error) {
-    console.error('Error uploading to Flask:', error.message);
+    console.error("Error uploading to Flask:", error.message);
     res.status(500).json({ error: "Internal server error" });
   } finally {
     // Delete the uploaded voice file
@@ -371,7 +376,6 @@ exports.voiceRecognition = async (req, res) => {
     });
   }
 };
-
 
 exports.getCheatingsforExam = catchAsync(async (req, res, next) => {
   const fraudCases = await Cheating.find({
@@ -386,3 +390,11 @@ exports.getCheatingsforExam = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.setIds = catchAsync(async (req, res, next) => {
+  req.body.student = req.user.id;
+  req.body.examId = req.params.examId;
+  next();
+});
+
+exports.addCheating = factory.createOne(Cheating);

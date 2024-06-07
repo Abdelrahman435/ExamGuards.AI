@@ -14,12 +14,13 @@ const cheatingSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      required: true,
     },
-    cheatingDetalis: [{
-      type: String,
-      required: true,
-    }],
+    cheatingDetalis: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
