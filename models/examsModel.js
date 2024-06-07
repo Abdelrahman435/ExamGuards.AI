@@ -108,7 +108,8 @@ const examSchema = new mongoose.Schema(
   }
 );
 
-examSchema.methods.updateStatus = function () {
+// Modified updateStatus method to save the updated status
+examSchema.methods.updateStatus = async function () {
   const now = new Date();
 
   const startedAtDate = new Date(this.startedAt);
@@ -125,7 +126,30 @@ examSchema.methods.updateStatus = function () {
   } else {
     this.status = "coming-soon";
   }
+
+  await this.save(); // Save the updated status
 };
+
+// Static method to update the status of a document
+examSchema.statics.updateExamStatus = async function (examId) {
+  const exam = await this.findById(examId);
+  if (exam) {
+    await exam.updateStatus();
+  }
+};
+
+// Pre middleware to update the status after find/findOne
+examSchema.post('find', async function (docs) {
+  for (const doc of docs) {
+    await doc.updateStatus();
+  }
+});
+
+examSchema.post('findOne', async function (doc) {
+  if (doc) {
+    await doc.updateStatus();
+  }
+});
 
 const Exam = mongoose.model("Exam", examSchema);
 
