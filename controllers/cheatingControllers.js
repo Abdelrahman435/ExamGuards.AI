@@ -192,7 +192,7 @@ exports.objectDetection = async (req, res) => {
   try {
     // Make a single request to the Flask endpoint
     const response = await axios.post(
-      "http://127.0.0.1:5000/detect",
+      "http://127.0.0.1:5001/detect",
       formData,
       {
         headers: {
