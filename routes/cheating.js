@@ -33,7 +33,7 @@ router.post(
   cheatingController.voiceRecognition
 );
 
-router.get("/fraudCases/:examId", cheatingController.getCheatingsforExam);
+router.get("/fraudCases/:examId/:studentId", cheatingController.getCheatingsforExam);
 
 router.post(
   "/addCheating/:examId",

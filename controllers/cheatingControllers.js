@@ -378,15 +378,36 @@ exports.voiceRecognition = async (req, res) => {
 };
 
 exports.getCheatingsforExam = catchAsync(async (req, res, next) => {
+  const { examId, studentId } = req.params;
+
   const fraudCases = await Cheating.find({
-    examId: req.params.examId,
-  }).populate("student", "firstName lastName email file"); // Assuming 'student' and 'file' are the field names referencing student and file/email respectively in your Cheating schema
+    examId: examId,
+    student: studentId
+  }).populate("student", "firstName lastName email file");
+
+  if (fraudCases.length === 0) {
+    return res.status(404).json({
+      status: "fail",
+      message: "No cheating records found for the given student in the specified exam."
+    });
+  }
+
+  const studentData = fraudCases[0].student;
+  const cheatingDetails = fraudCases.map(fraudCase => ({
+    id: fraudCase._id,
+    examId: fraudCase.examId,
+    image: fraudCase.image,
+    cheatingDetalis: fraudCase.cheatingDetalis,
+    createdAt: fraudCase.createdAt,
+    updatedAt: fraudCase.updatedAt
+  }));
 
   res.status(200).json({
     status: "success",
-    results: fraudCases.length,
+    results: cheatingDetails.length,
     data: {
-      fraudCases: fraudCases,
+      student: studentData,
+      cheatingDetails: cheatingDetails,
     },
   });
 });
