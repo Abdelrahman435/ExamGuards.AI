@@ -29,11 +29,11 @@ exports.deleteAllStudents = catchAsync(async (req, res, next) => {
   const courseId = req.params.id;
 
   // Update User documents efficiently based on user type and course ID
-  const updateResult = await User.updateMany(
+  await User.updateMany(
     { $or: [{ courses: courseId }, { type: "student" }] }, // Optimized query for student users with or without courseId
     { $pull: { courses: courseId } }
   );
-
+  await Course.updateOne({ _id: courseId }, { $set: { students: [] } });
   // Handle deletion of registrations and course student updates as needed
   // (Code for these operations might be outside the scope based on prompt)
 
