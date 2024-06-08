@@ -33,14 +33,17 @@ exports.deleteAllStudents = catchAsync(async (req, res, next) => {
     { $or: [{ courses: courseId }, { type: "student" }] }, // Optimized query for student users with or without courseId
     { $pull: { courses: courseId } }
   );
+
+  // Update the Course document to clear its students array
   await Course.updateOne({ _id: courseId }, { $set: { students: [] } });
-  // Handle deletion of registrations and course student updates as needed
-  // (Code for these operations might be outside the scope based on prompt)
+
+  // Delete all registration records for the specified course
+  await Register.deleteMany({ course: courseId });
 
   res.status(200).json({
     status: "success",
     message:
-      "All students have been removed from the course, and their course lists have been updated.",
+      "All students have been removed from the course, their course lists have been updated, and all related registrations have been deleted.",
   });
 });
 
