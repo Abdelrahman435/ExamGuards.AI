@@ -127,7 +127,7 @@ examSchema.methods.updateStatus = async function () {
     this.status = "coming-soon";
   }
 
-  await this.save(); // Save the updated status
+  await this.save();
 };
 
 // Static method to update the status of a document
@@ -137,19 +137,6 @@ examSchema.statics.updateExamStatus = async function (examId) {
     await exam.updateStatus();
   }
 };
-
-// Pre middleware to update the status after find/findOne
-examSchema.post('find', async function (docs) {
-  for (const doc of docs) {
-    await doc.updateStatus();
-  }
-});
-
-examSchema.post('findOne', async function (doc) {
-  if (doc) {
-    await doc.updateStatus();
-  }
-});
 
 const Exam = mongoose.model("Exam", examSchema);
 

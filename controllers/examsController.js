@@ -15,7 +15,22 @@ exports.createExam = factory.createOne(Exam);
 
 exports.updateExam = factory.updateOne(Exam);
 
-exports.getExam = factory.getOne(Exam);
+exports.getExam = catchAsync(async (req, res, next) => {
+  const exam = await Exam.findById(req.params.id);
+
+  if (!exam) {
+    return next(new AppError("No document found with that ID", 404));
+  }
+
+  await exam.updateStatus();
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      data: exam,
+    },
+  });
+});
 
 exports.deleteExam = factory.deleteOne(Exam);
 
@@ -41,8 +56,7 @@ exports.autoGrade = catchAsync(async (req, res, next) => {
     if (
       correctAnswers.some((answer) => answer.body.toLowerCase() === userAnswer)
     ) {
-
-      grade += Number(data[i].Points); 
+      grade += Number(data[i].Points);
     }
   }
   const totalPoints = exam.totalpoints;
