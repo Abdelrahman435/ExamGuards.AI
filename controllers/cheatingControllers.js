@@ -384,7 +384,7 @@ exports.getCheatingsforExam = catchAsync(async (req, res, next) => {
     examId: examId,
     student: studentId
   }).populate("student", "firstName lastName email file");
-
+  console.log(fraudCases)
   if (fraudCases.length === 0) {
     return res.status(404).json({
       status: "fail",
